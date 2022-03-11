@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+
+<head>
+    <!-- <link rel="stylesheet" href="http://elm-in-action.com/styles.css"> -->
+    <!-- <link rel="stylesheet" href="http://elm-in-action.com/range-slider.css"> -->
+    <!-- <script src="http://elm-in-action.com/range-slider.js"></script> -->
+</head>
+
+<body>
+    <!-- setting up the elm app, pointing it towards our main PhotoGroove.elm -->
+    <div id="app"></div>
+    <script src="app.js"></script>
+    <script>
+        let app = Elm.Client.init({
+            node: document.getElementById("app"),
+        });
+    </script>
+</body>
+
+</html>

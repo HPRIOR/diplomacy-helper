@@ -1,0 +1,14 @@
+{
+  "name": "diplomacy-helper",
+  "version": "1.0.0",
+  "description": "front end of tool to assist in generating diplomacy moves",
+  "main": "public/app.js",
+  "scripts": {
+    "test": "elm test"
+  },
+  "author": "Harry Prior",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.0.23"
+  }
+}
