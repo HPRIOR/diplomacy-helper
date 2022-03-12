@@ -36,8 +36,8 @@ getNewStageStatus input stageNeeds nextStageNeeds =
         Error ("Needed " ++ getNeededStr stageNeeds ++ " but found: " ++ input)
 
 
-evalStage : StageNeeds -> String -> StageStatus -> StageStatus
-evalStage nextStageNeeds input previousStage =
+fullEvaluator : StageNeeds -> String -> StageStatus -> StageStatus
+fullEvaluator nextStageNeeds input previousStage =
     case previousStage of
         Error reason ->
             Error reason
@@ -61,10 +61,10 @@ stages =
     ]
 
 
-getEvaluators : List String -> List Evaluator
-getEvaluators input =
+getPartialEvaluators : List String -> List Evaluator
+getPartialEvaluators input =
     List.map2 Tuple.pair stages input
-        |> List.map (\( stageNeeds, str ) -> evalStage stageNeeds str)
+        |> List.map (\( stageNeeds, str ) -> fullEvaluator stageNeeds str)
 
 
 applyEvaluators : List Evaluator -> StageStatus
@@ -79,7 +79,7 @@ applyEvaluators evaluators =
 
 getStageStatus : String -> StageStatus
 getStageStatus str =
-    ""
-        :: String.split " " str
-        |> getEvaluators
+    "" :: String.split " " str
+        |> getPartialEvaluators
+        |> List.reverse
         |> applyEvaluators

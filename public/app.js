@@ -5218,7 +5218,7 @@ var $author$project$Hint$getNewStageStatus = F3(
 		return A2($elm$core$List$member, input, stageNeeds.neededToComplete) ? $author$project$Hint$CanComplete(nextStageNeeds) : (A2($elm$core$List$member, input, stageNeeds.neededToContinue) ? $author$project$Hint$CanContinue(nextStageNeeds) : $author$project$Hint$Error(
 			'Needed ' + ($author$project$Hint$getNeededStr(stageNeeds) + (' but found: ' + input))));
 	});
-var $author$project$Hint$evalStage = F3(
+var $author$project$Hint$fullEvaluator = F3(
 	function (nextStageNeeds, input, previousStage) {
 		switch (previousStage.$) {
 			case 'Error':
@@ -5275,23 +5275,24 @@ var $author$project$Hint$stages = _List_fromArray(
 		neededToContinue: _List_Nil
 	}
 	]);
-var $author$project$Hint$getEvaluators = function (input) {
+var $author$project$Hint$getPartialEvaluators = function (input) {
 	return A2(
 		$elm$core$List$map,
 		function (_v0) {
 			var stageNeeds = _v0.a;
 			var str = _v0.b;
-			return A2($author$project$Hint$evalStage, stageNeeds, str);
+			return A2($author$project$Hint$fullEvaluator, stageNeeds, str);
 		},
 		A3($elm$core$List$map2, $elm$core$Tuple$pair, $author$project$Hint$stages, input));
 };
 var $author$project$Hint$getStageStatus = function (str) {
 	return $author$project$Hint$applyEvaluators(
-		$author$project$Hint$getEvaluators(
-			A2(
-				$elm$core$List$cons,
-				'',
-				A2($elm$core$String$split, ' ', str))));
+		$elm$core$List$reverse(
+			$author$project$Hint$getPartialEvaluators(
+				A2(
+					$elm$core$List$cons,
+					'',
+					A2($elm$core$String$split, ' ', str)))));
 };
 var $author$project$Client$stageStatusInterpreter = function (stageStatus) {
 	switch (stageStatus.$) {
