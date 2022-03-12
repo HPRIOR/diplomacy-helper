@@ -1,25 +1,31 @@
 module Client exposing (main)
 
 import Browser
+import Hint exposing (hint)
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Html.Events exposing (onInput)
 
 
 type alias Model =
-    { something : String }
+    { textArea : String }
 
 
 type Msg
-    = Something
+    = TextAreaChange String
 
 
 
 -- VIEW
 
 
-view : Model -> Html msg
-view _ =
-    h1 [ class "centre text-3xl font-bold underline"] [ text "hello" ]
+view : Model -> Html Msg
+view model =
+    div [ class "flex flex-col items-center" ]
+        [ h1 [ class "text-3xl underline" ] [ text "hello world" ]
+        , input [ class "mt-5 mb-5", onInput TextAreaChange ] []
+        , div [] [ text model.textArea ]
+        ]
 
 
 
@@ -29,8 +35,8 @@ view _ =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Something ->
-            ( model, Cmd.none )
+        TextAreaChange str ->
+            ( { model | textArea = hint str }, Cmd.none )
 
 
 
@@ -39,7 +45,7 @@ update msg model =
 
 initModel : Model
 initModel =
-    { something = "hello" }
+    { textArea = "" }
 
 
 main : Program () Model Msg
