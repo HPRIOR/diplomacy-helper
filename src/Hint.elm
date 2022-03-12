@@ -77,6 +77,5 @@ getStageStatus : String -> StageStatus
 getStageStatus str =
     ""::(String.split " " str)
         |> getEvaluators
-        |> List.reverse
         |> applyEvaluators
         

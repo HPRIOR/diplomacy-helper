@@ -5287,12 +5287,11 @@ var $author$project$Hint$getEvaluators = function (input) {
 };
 var $author$project$Hint$getStageStatus = function (str) {
 	return $author$project$Hint$applyEvaluators(
-		$elm$core$List$reverse(
-			$author$project$Hint$getEvaluators(
-				A2(
-					$elm$core$List$cons,
-					'',
-					A2($elm$core$String$split, ' ', str)))));
+		$author$project$Hint$getEvaluators(
+			A2(
+				$elm$core$List$cons,
+				'',
+				A2($elm$core$String$split, ' ', str))));
 };
 var $author$project$Client$stageStatusInterpreter = function (stageStatus) {
 	switch (stageStatus.$) {
