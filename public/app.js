@@ -5285,6 +5285,7 @@ var $author$project$Hint$getPartialEvaluators = function (input) {
 		},
 		A3($elm$core$List$map2, $elm$core$Tuple$pair, $author$project$Hint$stages, input));
 };
+var $elm$core$String$words = _String_words;
 var $author$project$Hint$getStageStatus = function (str) {
 	return $author$project$Hint$applyEvaluators(
 		$elm$core$List$reverse(
@@ -5292,7 +5293,7 @@ var $author$project$Hint$getStageStatus = function (str) {
 				A2(
 					$elm$core$List$cons,
 					'',
-					A2($elm$core$String$split, ' ', str)))));
+					$elm$core$String$words(str)))));
 };
 var $author$project$Client$stageStatusInterpreter = function (stageStatus) {
 	switch (stageStatus.$) {

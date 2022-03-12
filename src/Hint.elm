@@ -79,7 +79,8 @@ applyEvaluators evaluators =
 
 getStageStatus : String -> StageStatus
 getStageStatus str =
-    "" :: String.split " " str
+    ""
+        :: String.words str
         |> getPartialEvaluators
         |> List.reverse
         |> applyEvaluators
