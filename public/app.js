@@ -5144,13 +5144,166 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Client$initModel = {textArea: ''};
+var $author$project$Client$initModel = {parseResult: ''};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Hint$hint = function (str) {
-	return str;
+var $author$project$Hint$CanContinue = function (a) {
+	return {$: 'CanContinue', a: a};
+};
+var $author$project$Hint$applyEvaluators = function (evaluators) {
+	if (!evaluators.b) {
+		return $author$project$Hint$CanContinue(
+			{
+				neededToComplete: _List_Nil,
+				neededToContinue: _List_fromArray(
+					[''])
+			});
+	} else {
+		var first = evaluators.a;
+		var rest = evaluators.b;
+		return first(
+			$author$project$Hint$applyEvaluators(rest));
+	}
+};
+var $author$project$Hint$Error = function (a) {
+	return {$: 'Error', a: a};
+};
+var $author$project$Hint$CanComplete = function (a) {
+	return {$: 'CanComplete', a: a};
+};
+var $author$project$Hint$getNeededStr = function (stageNeeds) {
+	return A3(
+		$elm$core$List$foldr,
+		F2(
+			function (a, b) {
+				return a + (', ' + b);
+			}),
+		' ',
+		_Utils_ap(stageNeeds.neededToContinue, stageNeeds.neededToComplete));
+};
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$List$member = F2(
+	function (x, xs) {
+		return A2(
+			$elm$core$List$any,
+			function (a) {
+				return _Utils_eq(a, x);
+			},
+			xs);
+	});
+var $author$project$Hint$getNewStageStatus = F3(
+	function (input, stageNeeds, nextStageNeeds) {
+		return A2($elm$core$List$member, input, stageNeeds.neededToComplete) ? $author$project$Hint$CanComplete(nextStageNeeds) : (A2($elm$core$List$member, input, stageNeeds.neededToContinue) ? $author$project$Hint$CanContinue(nextStageNeeds) : $author$project$Hint$Error(
+			'Needed ' + ($author$project$Hint$getNeededStr(stageNeeds) + (' but found: ' + input))));
+	});
+var $author$project$Hint$evalStage = F3(
+	function (nextStageNeeds, input, previousStage) {
+		switch (previousStage.$) {
+			case 'Error':
+				var reason = previousStage.a;
+				return $author$project$Hint$Error(reason);
+			case 'CanComplete':
+				var stageNeeds = previousStage.a;
+				return A3($author$project$Hint$getNewStageStatus, input, stageNeeds, nextStageNeeds);
+			default:
+				var stageNeeds = previousStage.a;
+				return A3($author$project$Hint$getNewStageStatus, input, stageNeeds, nextStageNeeds);
+		}
+	});
+var $elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
+var $author$project$Hint$stages = _List_fromArray(
+	[
+		{
+		neededToComplete: _List_Nil,
+		neededToContinue: _List_fromArray(
+			['f', 'a'])
+	},
+		{
+		neededToComplete: _List_Nil,
+		neededToContinue: _List_fromArray(
+			['country'])
+	},
+		{
+		neededToComplete: _List_Nil,
+		neededToContinue: _List_fromArray(
+			['move', '->', 'supports'])
+	},
+		{
+		neededToComplete: _List_fromArray(
+			['country']),
+		neededToContinue: _List_fromArray(
+			['f', 'a'])
+	},
+		{
+		neededToComplete: _List_fromArray(
+			['country']),
+		neededToContinue: _List_Nil
+	},
+		{
+		neededToComplete: _List_Nil,
+		neededToContinue: _List_fromArray(
+			['move', '->'])
+	},
+		{
+		neededToComplete: _List_fromArray(
+			['country']),
+		neededToContinue: _List_Nil
+	}
+	]);
+var $author$project$Hint$getEvaluators = function (input) {
+	return A2(
+		$elm$core$List$map,
+		function (_v0) {
+			var stageNeeds = _v0.a;
+			var str = _v0.b;
+			return A2($author$project$Hint$evalStage, stageNeeds, str);
+		},
+		A3($elm$core$List$map2, $elm$core$Tuple$pair, $author$project$Hint$stages, input));
+};
+var $author$project$Hint$getStageStatus = function (str) {
+	return $author$project$Hint$applyEvaluators(
+		$elm$core$List$reverse(
+			$author$project$Hint$getEvaluators(
+				A2(
+					$elm$core$List$cons,
+					'',
+					A2($elm$core$String$split, ' ', str)))));
+};
+var $author$project$Client$stageStatusInterpreter = function (stageStatus) {
+	switch (stageStatus.$) {
+		case 'CanComplete':
+			return 'Can Complete';
+		case 'CanContinue':
+			return 'Can Continue';
+		default:
+			var e = stageStatus.a;
+			return e;
+	}
 };
 var $author$project$Client$update = F2(
 	function (msg, model) {
@@ -5159,7 +5312,8 @@ var $author$project$Client$update = F2(
 			_Utils_update(
 				model,
 				{
-					textArea: $author$project$Hint$hint(str)
+					parseResult: $author$project$Client$stageStatusInterpreter(
+						$author$project$Hint$getStageStatus(str))
 				}),
 			$elm$core$Platform$Cmd$none);
 	});
@@ -5246,7 +5400,7 @@ var $author$project$Client$view = function (model) {
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text(model.textArea)
+						$elm$html$Html$text(model.parseResult)
 					]))
 			]));
 };

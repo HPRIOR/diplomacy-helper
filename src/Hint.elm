@@ -1,9 +1,4 @@
-module Hint exposing (hint)
-
-import Dict exposing (get)
-import Html exposing (input)
-
-
+module Hint exposing (getStageStatus, StageStatus(..))
 type StageStatus
     = CanComplete StageNeeds
     | CanContinue StageNeeds
@@ -16,6 +11,15 @@ type alias StageNeeds =
     }
 
 
+type alias Evaluator =
+    StageStatus -> StageStatus
+
+getNeededStr: StageNeeds -> String
+getNeededStr stageNeeds =
+    stageNeeds.neededToContinue ++ stageNeeds.neededToComplete
+    |> List.foldr (\a b -> a ++ ", " ++ b) " "
+
+
 getNewStageStatus : String -> StageNeeds -> StageNeeds -> StageStatus
 getNewStageStatus input stageNeeds nextStageNeeds =
     if List.member input stageNeeds.neededToComplete then
@@ -25,11 +29,11 @@ getNewStageStatus input stageNeeds nextStageNeeds =
         CanContinue nextStageNeeds
 
     else
-        Error "Needed something but didn't find anything"
+        Error ("Needed " ++ getNeededStr stageNeeds ++ " but found: " ++ input)
 
 
-evalStage : StageStatus -> String -> StageNeeds -> StageStatus
-evalStage previousStage input nextStageNeeds =
+evalStage : StageNeeds -> String -> StageStatus -> StageStatus
+evalStage nextStageNeeds input previousStage =
     case previousStage of
         Error reason ->
             Error reason
@@ -38,9 +42,41 @@ evalStage previousStage input nextStageNeeds =
             getNewStageStatus input stageNeeds nextStageNeeds
 
         CanContinue stageNeeds ->
-            getNewStageStatus input stageNeeds  nextStageNeeds
+            getNewStageStatus input stageNeeds nextStageNeeds
 
 
-hint : String -> String
-hint str =
-    str
+stages : List StageNeeds
+stages =
+    [ { neededToContinue = [ "f", "a" ], neededToComplete = [] }
+    , { neededToContinue = [ "country" ], neededToComplete = [] }
+    , { neededToContinue = [ "move", "->", "supports" ], neededToComplete = [] }
+    , { neededToContinue = [ "f", "a" ], neededToComplete = [ "country" ] }
+    , { neededToContinue = [], neededToComplete = [ "country" ] }
+    , { neededToContinue = [ "move", "->" ], neededToComplete = [] }
+    , { neededToContinue = [], neededToComplete = [ "country" ] }
+    ]
+
+
+getEvaluators : List String -> List Evaluator
+getEvaluators input =
+    List.map2 Tuple.pair stages input
+        |> List.map (\( stageNeeds, str ) -> evalStage stageNeeds str)
+
+
+applyEvaluators : List Evaluator -> StageStatus
+applyEvaluators evaluators =
+    case evaluators of
+        [] -> 
+            CanContinue { neededToComplete = [], neededToContinue = [""]}
+
+        (first::rest) ->
+            first (applyEvaluators rest)
+
+
+getStageStatus : String -> StageStatus
+getStageStatus str =
+    ""::(String.split " " str)
+        |> getEvaluators
+        |> List.reverse
+        |> applyEvaluators
+        
