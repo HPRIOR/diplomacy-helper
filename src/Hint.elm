@@ -1,4 +1,6 @@
-module Hint exposing (getStageStatus, StageStatus(..))
+module Hint exposing (StageStatus(..), getStageStatus)
+
+
 type StageStatus
     = CanComplete StageNeeds
     | CanContinue StageNeeds
@@ -14,10 +16,12 @@ type alias StageNeeds =
 type alias Evaluator =
     StageStatus -> StageStatus
 
-getNeededStr: StageNeeds -> String
+
+getNeededStr : StageNeeds -> String
 getNeededStr stageNeeds =
-    stageNeeds.neededToContinue ++ stageNeeds.neededToComplete
-    |> List.foldr (\a b -> a ++ ", " ++ b) " "
+    stageNeeds.neededToContinue
+        ++ stageNeeds.neededToComplete
+        |> List.foldr (\a b -> a ++ ", " ++ b) " "
 
 
 getNewStageStatus : String -> StageNeeds -> StageNeeds -> StageStatus
@@ -66,16 +70,16 @@ getEvaluators input =
 applyEvaluators : List Evaluator -> StageStatus
 applyEvaluators evaluators =
     case evaluators of
-        [] -> 
-            CanContinue { neededToComplete = [], neededToContinue = [""]}
+        [] ->
+            CanContinue { neededToComplete = [], neededToContinue = [ "" ] }
 
-        (first::rest) ->
+        first :: rest ->
             first (applyEvaluators rest)
 
 
 getStageStatus : String -> StageStatus
 getStageStatus str =
-    ""::(String.split " " str)
+    ""
+        :: String.split " " str
         |> getEvaluators
         |> applyEvaluators
-        
