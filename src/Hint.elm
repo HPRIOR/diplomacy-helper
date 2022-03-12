@@ -28,17 +28,17 @@ getNewStageStatus input stageNeeds nextStageNeeds =
         Error "Needed something but didn't find anything"
 
 
-evalStage : StageStatus -> String -> StageStatus
-evalStage previousStage input =
+evalStage : StageStatus -> String -> StageNeeds -> StageStatus
+evalStage previousStage input nextStageNeeds =
     case previousStage of
         Error reason ->
             Error reason
 
-        CanComplete neededToContinue neededToComplete ->
-            getNewStageStatus input neededToContinue neededToComplete [] []
+        CanComplete stageNeeds ->
+            getNewStageStatus input stageNeeds nextStageNeeds
 
-        CanContinue neededToContinue neededToComplete ->
-            getNewStageStatus input neededToContinue neededToComplete [] []
+        CanContinue stageNeeds ->
+            getNewStageStatus input stageNeeds  nextStageNeeds
 
 
 hint : String -> String
