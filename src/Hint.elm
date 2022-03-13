@@ -26,16 +26,29 @@ getNeededStr stageNeeds =
 
 getNewStageStatus : String -> StageNeeds -> StageNeeds -> StageStatus
 getNewStageStatus input stageNeeds nextStageNeeds =
-    if List.member input stageNeeds.neededToComplete then
+    if stageNeeds.neededToComplete |> List.member input then
         CanComplete nextStageNeeds
 
-    else if List.member input stageNeeds.neededToContinue then
+    else if stageNeeds.neededToContinue |> List.member input then
         CanContinue nextStageNeeds
 
     else
         Error ("Needed " ++ getNeededStr stageNeeds ++ " but found: " ++ input)
 
 
+{-| This function is designed to be partially applied with `nextStageNeeds` and `input` being provided up front.
+
+    Each word in the input is associated with a given evaluator, and the conditions required for the next stage of the evaluation.
+    The conditions required for the current evaluator are passed through by the previous stage, either wrapped in a CanComplete or
+    a CanContinue.
+
+    If the criteria is not met then an Error and a reason is passed through.
+
+    For example, if a given an evaluator requires `neededToContinue = ["continue"]` and `neededToComplete = ["complete"]`, the input must
+    be either "word" or "complete". "complete" will pass a `CanComplete`, "continue" will pass a `CanContinue` to the next stage, which wraps the
+    already applied criteria for the next stage.
+
+-}
 fullEvaluator : StageNeeds -> String -> StageStatus -> StageStatus
 fullEvaluator nextStageNeeds input previousStage =
     case previousStage of
@@ -71,6 +84,7 @@ applyEvaluators : List Evaluator -> StageStatus
 applyEvaluators evaluators =
     case evaluators of
         [] ->
+            -- seed algorithm with empty base case
             CanContinue { neededToComplete = [], neededToContinue = [ "" ] }
 
         first :: rest ->

@@ -8,7 +8,9 @@ import Html.Events exposing (onInput)
 
 
 type alias Model =
-    { parseResult : String }
+    { stageStatus : StageStatus
+    , input : String
+    }
 
 
 type Msg
@@ -19,12 +21,52 @@ type Msg
 -- VIEW
 
 
+getSuggestions : List String -> String -> List String
+getSuggestions needed input =
+    needed |> List.map (\s -> input ++ " " ++ s)
+
+
+
+
+
+
+stageStatusInterpreter : StageStatus -> String -> List String
+stageStatusInterpreter stageStatus input =
+    case stageStatus of
+        CanComplete stageNeeds ->
+            getSuggestions (stageNeeds.neededToContinue ++ stageNeeds.neededToComplete) input
+
+        CanContinue stageNeeds ->
+            getSuggestions (stageNeeds.neededToContinue ++ stageNeeds.neededToComplete) input
+
+        Error e ->
+            [ e ]
+
+
+viewStageStatus : List String -> List (Html Msg)
+viewStageStatus hints =
+    hints |> List.map (\hint -> div [] [ text hint ])
+
+
+viewSubmitButton : StageStatus -> Html Msg
+viewSubmitButton stageStatus =
+    case stageStatus of
+        CanComplete _ ->
+            button [] [ text "Can Submit" ]
+
+        _ ->
+            button [] [ text "Can't Submit" ]
+
+
 view : Model -> Html Msg
 view model =
     div [ class "flex flex-col items-center" ]
         [ h1 [ class "text-3xl underline" ] [ text "hello world" ]
-        , input [ class "mt-5 mb-5", onInput TextAreaChange ] []
-        , div [] [ text model.parseResult ]
+        , div []
+            [ input [ class "mt-5 mb-5", onInput TextAreaChange ] []
+            , viewSubmitButton model.stageStatus
+            ]
+        , div [] (viewStageStatus (stageStatusInterpreter model.stageStatus model.input))
         ]
 
 
@@ -32,22 +74,11 @@ view model =
 -- UDPATE
 
 
-stageStatusInterpreter : StageStatus -> String
-stageStatusInterpreter stageStatus =
-    case stageStatus of
-        CanComplete _ ->
-            "Can Complete"
-        CanContinue _ ->
-            "Can Continue"
-        Error e ->
-            e
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        TextAreaChange str ->
-            ( { model | parseResult = stageStatusInterpreter (getStageStatus str) }, Cmd.none )
+        TextAreaChange input ->
+            ( { model | stageStatus = getStageStatus input, input = input }, Cmd.none )
 
 
 
@@ -56,7 +87,9 @@ update msg model =
 
 initModel : Model
 initModel =
-    { parseResult = "" }
+    { stageStatus = CanContinue { neededToComplete = [], neededToContinue = [] }
+    , input = ""
+    }
 
 
 main : Program () Model Msg

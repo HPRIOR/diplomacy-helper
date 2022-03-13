@@ -5144,14 +5144,18 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Client$initModel = {parseResult: ''};
+var $author$project$Hint$CanContinue = function (a) {
+	return {$: 'CanContinue', a: a};
+};
+var $author$project$Client$initModel = {
+	input: '',
+	stageStatus: $author$project$Hint$CanContinue(
+		{neededToComplete: _List_Nil, neededToContinue: _List_Nil})
+};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Hint$CanContinue = function (a) {
-	return {$: 'CanContinue', a: a};
-};
 var $author$project$Hint$applyEvaluators = function (evaluators) {
 	if (!evaluators.b) {
 		return $author$project$Hint$CanContinue(
@@ -5295,26 +5299,15 @@ var $author$project$Hint$getStageStatus = function (str) {
 					'',
 					$elm$core$String$words(str)))));
 };
-var $author$project$Client$stageStatusInterpreter = function (stageStatus) {
-	switch (stageStatus.$) {
-		case 'CanComplete':
-			return 'Can Complete';
-		case 'CanContinue':
-			return 'Can Continue';
-		default:
-			var e = stageStatus.a;
-			return e;
-	}
-};
 var $author$project$Client$update = F2(
 	function (msg, model) {
-		var str = msg.a;
+		var input = msg.a;
 		return _Utils_Tuple2(
 			_Utils_update(
 				model,
 				{
-					parseResult: $author$project$Client$stageStatusInterpreter(
-						$author$project$Hint$getStageStatus(str))
+					input: input,
+					stageStatus: $author$project$Hint$getStageStatus(input)
 				}),
 			$elm$core$Platform$Cmd$none);
 	});
@@ -5367,8 +5360,72 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
+var $author$project$Client$getSuggestions = F2(
+	function (needed, input) {
+		return A2(
+			$elm$core$List$map,
+			function (s) {
+				return input + (' ' + s);
+			},
+			needed);
+	});
+var $author$project$Client$stageStatusInterpreter = F2(
+	function (stageStatus, input) {
+		switch (stageStatus.$) {
+			case 'CanComplete':
+				var stageNeeds = stageStatus.a;
+				return A2(
+					$author$project$Client$getSuggestions,
+					_Utils_ap(stageNeeds.neededToContinue, stageNeeds.neededToComplete),
+					input);
+			case 'CanContinue':
+				var stageNeeds = stageStatus.a;
+				return A2(
+					$author$project$Client$getSuggestions,
+					_Utils_ap(stageNeeds.neededToContinue, stageNeeds.neededToComplete),
+					input);
+			default:
+				var e = stageStatus.a;
+				return _List_fromArray(
+					[e]);
+		}
+	});
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$Client$viewStageStatus = function (hints) {
+	return A2(
+		$elm$core$List$map,
+		function (hint) {
+			return A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(hint)
+					]));
+		},
+		hints);
+};
+var $elm$html$Html$button = _VirtualDom_node('button');
+var $author$project$Client$viewSubmitButton = function (stageStatus) {
+	if (stageStatus.$ === 'CanComplete') {
+		return A2(
+			$elm$html$Html$button,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Can Submit')
+				]));
+	} else {
+		return A2(
+			$elm$html$Html$button,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Can\'t Submit')
+				]));
+	}
+};
 var $author$project$Client$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
@@ -5389,20 +5446,25 @@ var $author$project$Client$view = function (model) {
 						$elm$html$Html$text('hello world')
 					])),
 				A2(
-				$elm$html$Html$input,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('mt-5 mb-5'),
-						$elm$html$Html$Events$onInput($author$project$Client$TextAreaChange)
-					]),
-				_List_Nil),
-				A2(
 				$elm$html$Html$div,
 				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$text(model.parseResult)
-					]))
+						A2(
+						$elm$html$Html$input,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('mt-5 mb-5'),
+								$elm$html$Html$Events$onInput($author$project$Client$TextAreaChange)
+							]),
+						_List_Nil),
+						$author$project$Client$viewSubmitButton(model.stageStatus)
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				$author$project$Client$viewStageStatus(
+					A2($author$project$Client$stageStatusInterpreter, model.stageStatus, model.input)))
 			]));
 };
 var $author$project$Client$main = $elm$browser$Browser$element(
