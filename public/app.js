@@ -5219,7 +5219,9 @@ var $elm$core$List$member = F2(
 	});
 var $author$project$Hint$getNewStageStatus = F3(
 	function (input, stageNeeds, nextStageNeeds) {
-		return A2($elm$core$List$member, input, stageNeeds.neededToComplete) ? $author$project$Hint$CanComplete(nextStageNeeds) : (A2($elm$core$List$member, input, stageNeeds.neededToContinue) ? $author$project$Hint$CanContinue(nextStageNeeds) : $author$project$Hint$Error(
+		return A2($elm$core$List$member, input, stageNeeds.neededToComplete) ? $author$project$Hint$CanComplete(
+			nextStageNeeds(input)) : (A2($elm$core$List$member, input, stageNeeds.neededToContinue) ? $author$project$Hint$CanContinue(
+			nextStageNeeds(input)) : $author$project$Hint$Error(
 			'Needed ' + ($author$project$Hint$getNeededStr(stageNeeds) + (' but found: ' + input))));
 	});
 var $author$project$Hint$fullEvaluator = F3(
@@ -5242,41 +5244,69 @@ var $elm$core$Tuple$pair = F2(
 	});
 var $author$project$Hint$stages = _List_fromArray(
 	[
-		{
-		neededToComplete: _List_Nil,
-		neededToContinue: _List_fromArray(
-			['f', 'a'])
+		function (_v0) {
+		return {
+			neededToComplete: _List_Nil,
+			neededToContinue: _List_fromArray(
+				['f', 'a'])
+		};
 	},
-		{
-		neededToComplete: _List_Nil,
-		neededToContinue: _List_fromArray(
-			['country'])
+		function (_v1) {
+		return {
+			neededToComplete: _List_Nil,
+			neededToContinue: _List_fromArray(
+				['country'])
+		};
 	},
-		{
-		neededToComplete: _List_Nil,
-		neededToContinue: _List_fromArray(
-			['move', '->', 'supports'])
+		function (_v2) {
+		return {
+			neededToComplete: _List_Nil,
+			neededToContinue: _List_fromArray(
+				['move', '->', 'supports'])
+		};
 	},
-		{
-		neededToComplete: _List_fromArray(
-			['country']),
-		neededToContinue: _List_fromArray(
-			['f', 'a'])
+		function (input) {
+		if (input === 'supports') {
+			return {
+				neededToComplete: _List_Nil,
+				neededToContinue: _List_fromArray(
+					['f', 'a'])
+			};
+		} else {
+			return {
+				neededToComplete: _List_fromArray(
+					['country']),
+				neededToContinue: _List_Nil
+			};
+		}
 	},
-		{
-		neededToComplete: _List_fromArray(
-			['country']),
-		neededToContinue: _List_Nil
+		function (input) {
+		if (input === 'country') {
+			return {neededToComplete: _List_Nil, neededToContinue: _List_Nil};
+		} else {
+			return {
+				neededToComplete: _List_fromArray(
+					['country']),
+				neededToContinue: _List_Nil
+			};
+		}
 	},
-		{
-		neededToComplete: _List_Nil,
-		neededToContinue: _List_fromArray(
-			['move', '->'])
+		function (_v5) {
+		return {
+			neededToComplete: _List_Nil,
+			neededToContinue: _List_fromArray(
+				['move', '->'])
+		};
 	},
-		{
-		neededToComplete: _List_fromArray(
-			['country']),
-		neededToContinue: _List_Nil
+		function (_v6) {
+		return {
+			neededToComplete: _List_fromArray(
+				['country']),
+			neededToContinue: _List_Nil
+		};
+	},
+		function (_v7) {
+		return {neededToComplete: _List_Nil, neededToContinue: _List_Nil};
 	}
 	]);
 var $author$project$Hint$getPartialEvaluators = function (input) {

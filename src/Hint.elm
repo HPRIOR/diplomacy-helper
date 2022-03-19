@@ -24,13 +24,13 @@ getNeededStr stageNeeds =
         |> List.foldr (\a b -> a ++ ", " ++ b) " "
 
 
-getNewStageStatus : String -> StageNeeds -> StageNeeds -> StageStatus
+getNewStageStatus : String -> StageNeeds -> (String -> StageNeeds) -> StageStatus
 getNewStageStatus input stageNeeds nextStageNeeds =
     if stageNeeds.neededToComplete |> List.member input then
-        CanComplete nextStageNeeds
+        CanComplete (nextStageNeeds input)
 
     else if stageNeeds.neededToContinue |> List.member input then
-        CanContinue nextStageNeeds
+        CanContinue (nextStageNeeds input)
 
     else
         Error ("Needed " ++ getNeededStr stageNeeds ++ " but found: " ++ input)
@@ -49,7 +49,7 @@ getNewStageStatus input stageNeeds nextStageNeeds =
     already applied criteria for the next stage.
 
 -}
-fullEvaluator : StageNeeds -> String -> StageStatus -> StageStatus
+fullEvaluator : (String -> StageNeeds) -> String -> StageStatus -> StageStatus
 fullEvaluator nextStageNeeds input previousStage =
     case previousStage of
         Error reason ->
@@ -62,16 +62,38 @@ fullEvaluator nextStageNeeds input previousStage =
             getNewStageStatus input stageNeeds nextStageNeeds
 
 
-stages : List StageNeeds
+stages : List (String -> StageNeeds)
 stages =
-    [ { neededToContinue = [ "f", "a" ], neededToComplete = [] }
-    , { neededToContinue = [ "country" ], neededToComplete = [] }
-    , { neededToContinue = [ "move", "->", "supports" ], neededToComplete = [] }
-    , { neededToContinue = [ "f", "a" ], neededToComplete = [ "country" ] }
-    , { neededToContinue = [], neededToComplete = [ "country" ] }
-    , { neededToContinue = [ "move", "->" ], neededToComplete = [] }
-    , { neededToContinue = [], neededToComplete = [ "country" ] }
+    [ \_ -> { neededToContinue = [ "f", "a" ], neededToComplete = [] }
+    , \_ -> { neededToContinue = [ "country" ], neededToComplete = [] }
+    , \_ -> { neededToContinue = [ "move", "->", "supports" ], neededToComplete = [] }
+    , \input ->
+        case input of
+            "supports" ->
+                { neededToContinue = [ "f", "a" ], neededToComplete = [] }
+
+            _ ->
+                { neededToContinue = [], neededToComplete = [ "country" ] }
+    , \input ->
+        case input of
+            "country" ->
+                { neededToContinue = [], neededToComplete = [] }
+
+            _ ->
+                { neededToContinue = [], neededToComplete = [ "country" ] }
+
+    , \_ -> { neededToContinue = [ "move", "->" ], neededToComplete = [] }
+    , \_ -> { neededToContinue = [], neededToComplete = [ "country" ] }
+    , \_ -> { neededToContinue = [], neededToComplete = [] }
     ]
+
+
+
+{-
+   Use `List String -> StageNeeds` instead
+   parses input and returns correct stageNeeds
+
+-}
 
 
 getPartialEvaluators : List String -> List Evaluator
@@ -98,3 +120,9 @@ getStageStatus str =
         |> getPartialEvaluators
         |> List.reverse
         |> applyEvaluators
+
+
+
+-- bug: needed to complete and needed to continue are not always in sync
+-- e.g. f country supports country country
+-- back to the drawing board
