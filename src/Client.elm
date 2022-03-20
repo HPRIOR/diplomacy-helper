@@ -8,7 +8,7 @@ import Html.Events exposing (onInput)
 
 
 type alias Model =
-    { stageStatus : StageStatus
+    { stageNeeds : StageNeeds
     , input : String
     }
 
@@ -26,21 +26,20 @@ getSuggestions needed input =
     needed |> List.map (\s -> input ++ " " ++ s)
 
 
+getNeededStr : List String -> String
+getNeededStr needed =
+    needed
+        |> List.foldr (\a b -> a ++ ", " ++ b) " "
 
 
+stageStatusInterpreter : StageNeeds -> String -> List String
+stageStatusInterpreter stageNeeds input =
+    case ( stageNeeds.stageCode, stageNeeds.neededNext ) of
+        ( Error, needed ) ->
+            [ getNeededStr needed ]
 
-
-stageStatusInterpreter : StageStatus -> String -> List String
-stageStatusInterpreter stageStatus input =
-    case stageStatus of
-        CanComplete stageNeeds ->
-            getSuggestions (stageNeeds.neededToContinue ++ stageNeeds.neededToComplete) input
-
-        CanContinue stageNeeds ->
-            getSuggestions (stageNeeds.neededToContinue ++ stageNeeds.neededToComplete) input
-
-        Error e ->
-            [ e ]
+        ( _, needed ) ->
+            getSuggestions needed input
 
 
 viewStageStatus : List String -> List (Html Msg)
@@ -48,10 +47,10 @@ viewStageStatus hints =
     hints |> List.map (\hint -> div [] [ text hint ])
 
 
-viewSubmitButton : StageStatus -> Html Msg
-viewSubmitButton stageStatus =
-    case stageStatus of
-        CanComplete _ ->
+viewSubmitButton : StageNeeds -> Html Msg
+viewSubmitButton stageNeeds =
+    case stageNeeds.stageCode of
+        Complete ->
             button [] [ text "Can Submit" ]
 
         _ ->
@@ -61,12 +60,12 @@ viewSubmitButton stageStatus =
 view : Model -> Html Msg
 view model =
     div [ class "flex flex-col items-center" ]
-        [ h1 [ class "text-3xl underline" ] [ text "hello world" ]
+        [ h1 [ class "text-3xl" ] [ text "Diplomacy Helper!" ]
         , div []
             [ input [ class "mt-5 mb-5", onInput TextAreaChange ] []
-            , viewSubmitButton model.stageStatus
+            , viewSubmitButton model.stageNeeds
             ]
-        , div [] (viewStageStatus (stageStatusInterpreter model.stageStatus model.input))
+        , div [] (viewStageStatus (stageStatusInterpreter model.stageNeeds model.input))
         ]
 
 
@@ -78,7 +77,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         TextAreaChange input ->
-            ( { model | stageStatus = getStageStatus input, input = input }, Cmd.none )
+            ( { model | stageNeeds = getStageStatus input, input = input }, Cmd.none )
 
 
 
@@ -87,7 +86,8 @@ update msg model =
 
 initModel : Model
 initModel =
-    { stageStatus = CanContinue { neededToComplete = [], neededToContinue = [] }
+    { stageNeeds =
+        { neededNext = [ "f", "a" ], stageCode = Continue }
     , input = ""
     }
 

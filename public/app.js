@@ -5144,13 +5144,14 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Hint$CanContinue = function (a) {
-	return {$: 'CanContinue', a: a};
-};
+var $author$project$Hint$Continue = {$: 'Continue'};
 var $author$project$Client$initModel = {
 	input: '',
-	stageStatus: $author$project$Hint$CanContinue(
-		{neededToComplete: _List_Nil, neededToContinue: _List_Nil})
+	stageNeeds: {
+		neededNext: _List_fromArray(
+			['f', 'a']),
+		stageCode: $author$project$Hint$Continue
+	}
 };
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -5158,12 +5159,11 @@ var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Hint$applyEvaluators = function (evaluators) {
 	if (!evaluators.b) {
-		return $author$project$Hint$CanContinue(
-			{
-				neededToComplete: _List_Nil,
-				neededToContinue: _List_fromArray(
-					[''])
-			});
+		return {
+			neededNext: _List_fromArray(
+				['']),
+			stageCode: $author$project$Hint$Continue
+		};
 	} else {
 		var first = evaluators.a;
 		var rest = evaluators.b;
@@ -5171,22 +5171,7 @@ var $author$project$Hint$applyEvaluators = function (evaluators) {
 			$author$project$Hint$applyEvaluators(rest));
 	}
 };
-var $author$project$Hint$Error = function (a) {
-	return {$: 'Error', a: a};
-};
-var $author$project$Hint$CanComplete = function (a) {
-	return {$: 'CanComplete', a: a};
-};
-var $author$project$Hint$getNeededStr = function (stageNeeds) {
-	return A3(
-		$elm$core$List$foldr,
-		F2(
-			function (a, b) {
-				return a + (', ' + b);
-			}),
-		' ',
-		_Utils_ap(stageNeeds.neededToContinue, stageNeeds.neededToComplete));
-};
+var $author$project$Hint$Error = {$: 'Error'};
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
 		any:
@@ -5219,94 +5204,107 @@ var $elm$core$List$member = F2(
 	});
 var $author$project$Hint$getNewStageStatus = F3(
 	function (input, stageNeeds, nextStageNeeds) {
-		return A2($elm$core$List$member, input, stageNeeds.neededToComplete) ? $author$project$Hint$CanComplete(
-			nextStageNeeds(input)) : (A2($elm$core$List$member, input, stageNeeds.neededToContinue) ? $author$project$Hint$CanContinue(
-			nextStageNeeds(input)) : $author$project$Hint$Error(
-			'Needed ' + ($author$project$Hint$getNeededStr(stageNeeds) + (' but found: ' + input))));
+		return A2($elm$core$List$member, input, stageNeeds.neededNext) ? nextStageNeeds(input) : _Utils_update(
+			stageNeeds,
+			{stageCode: $author$project$Hint$Error});
 	});
 var $author$project$Hint$fullEvaluator = F3(
-	function (nextStageNeeds, input, previousStage) {
-		switch (previousStage.$) {
-			case 'Error':
-				var reason = previousStage.a;
-				return $author$project$Hint$Error(reason);
-			case 'CanComplete':
-				var stageNeeds = previousStage.a;
-				return A3($author$project$Hint$getNewStageStatus, input, stageNeeds, nextStageNeeds);
-			default:
-				var stageNeeds = previousStage.a;
-				return A3($author$project$Hint$getNewStageStatus, input, stageNeeds, nextStageNeeds);
+	function (nextStageNeeds, input, prevStage) {
+		var _v0 = _Utils_Tuple2(prevStage.neededNext, prevStage.stageCode);
+		if (_v0.b.$ === 'Error') {
+			var _v1 = _v0.b;
+			return prevStage;
+		} else {
+			var needed = _v0.a;
+			var code = _v0.b;
+			return A3(
+				$author$project$Hint$getNewStageStatus,
+				input,
+				{neededNext: needed, stageCode: code},
+				nextStageNeeds);
 		}
 	});
 var $elm$core$Tuple$pair = F2(
 	function (a, b) {
 		return _Utils_Tuple2(a, b);
 	});
+var $author$project$Hint$Complete = {$: 'Complete'};
 var $author$project$Hint$stages = _List_fromArray(
 	[
 		function (_v0) {
 		return {
-			neededToComplete: _List_Nil,
-			neededToContinue: _List_fromArray(
-				['f', 'a'])
+			neededNext: _List_fromArray(
+				['f', 'a']),
+			stageCode: $author$project$Hint$Continue
 		};
 	},
 		function (_v1) {
 		return {
-			neededToComplete: _List_Nil,
-			neededToContinue: _List_fromArray(
-				['country'])
+			neededNext: _List_fromArray(
+				['country']),
+			stageCode: $author$project$Hint$Continue
 		};
 	},
 		function (_v2) {
 		return {
-			neededToComplete: _List_Nil,
-			neededToContinue: _List_fromArray(
-				['move', '->', 'supports'])
+			neededNext: _List_fromArray(
+				['move', '->', 'supports']),
+			stageCode: $author$project$Hint$Continue
 		};
 	},
 		function (input) {
 		if (input === 'supports') {
 			return {
-				neededToComplete: _List_Nil,
-				neededToContinue: _List_fromArray(
-					['f', 'a'])
+				neededNext: _List_fromArray(
+					['f', 'a']),
+				stageCode: $author$project$Hint$Continue
 			};
 		} else {
 			return {
-				neededToComplete: _List_fromArray(
+				neededNext: _List_fromArray(
 					['country']),
-				neededToContinue: _List_Nil
+				stageCode: $author$project$Hint$Continue
 			};
 		}
 	},
 		function (input) {
 		if (input === 'country') {
-			return {neededToComplete: _List_Nil, neededToContinue: _List_Nil};
+			return {neededNext: _List_Nil, stageCode: $author$project$Hint$Complete};
 		} else {
 			return {
-				neededToComplete: _List_fromArray(
+				neededNext: _List_fromArray(
 					['country']),
-				neededToContinue: _List_Nil
+				stageCode: $author$project$Hint$Continue
 			};
 		}
 	},
-		function (_v5) {
-		return {
-			neededToComplete: _List_Nil,
-			neededToContinue: _List_fromArray(
-				['move', '->'])
-		};
+		function (input) {
+		if (input === 'country') {
+			return {
+				neededNext: _List_fromArray(
+					['move', '->']),
+				stageCode: $author$project$Hint$Complete
+			};
+		} else {
+			return {
+				neededNext: _List_fromArray(
+					['move', '->']),
+				stageCode: $author$project$Hint$Continue
+			};
+		}
 	},
 		function (_v6) {
 		return {
-			neededToComplete: _List_fromArray(
+			neededNext: _List_fromArray(
 				['country']),
-			neededToContinue: _List_Nil
+			stageCode: $author$project$Hint$Continue
 		};
 	},
 		function (_v7) {
-		return {neededToComplete: _List_Nil, neededToContinue: _List_Nil};
+		return {neededNext: _List_Nil, stageCode: $author$project$Hint$Complete};
+	},
+		function (_v8) {
+		return {neededNext: _List_Nil, stageCode: $author$project$Hint$Error};
 	}
 	]);
 var $author$project$Hint$getPartialEvaluators = function (input) {
@@ -5337,7 +5335,7 @@ var $author$project$Client$update = F2(
 				model,
 				{
 					input: input,
-					stageStatus: $author$project$Hint$getStageStatus(input)
+					stageNeeds: $author$project$Hint$getStageStatus(input)
 				}),
 			$elm$core$Platform$Cmd$none);
 	});
@@ -5390,6 +5388,16 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
+var $author$project$Client$getNeededStr = function (needed) {
+	return A3(
+		$elm$core$List$foldr,
+		F2(
+			function (a, b) {
+				return a + (', ' + b);
+			}),
+		' ',
+		needed);
+};
 var $author$project$Client$getSuggestions = F2(
 	function (needed, input) {
 		return A2(
@@ -5400,24 +5408,18 @@ var $author$project$Client$getSuggestions = F2(
 			needed);
 	});
 var $author$project$Client$stageStatusInterpreter = F2(
-	function (stageStatus, input) {
-		switch (stageStatus.$) {
-			case 'CanComplete':
-				var stageNeeds = stageStatus.a;
-				return A2(
-					$author$project$Client$getSuggestions,
-					_Utils_ap(stageNeeds.neededToContinue, stageNeeds.neededToComplete),
-					input);
-			case 'CanContinue':
-				var stageNeeds = stageStatus.a;
-				return A2(
-					$author$project$Client$getSuggestions,
-					_Utils_ap(stageNeeds.neededToContinue, stageNeeds.neededToComplete),
-					input);
-			default:
-				var e = stageStatus.a;
-				return _List_fromArray(
-					[e]);
+	function (stageNeeds, input) {
+		var _v0 = _Utils_Tuple2(stageNeeds.stageCode, stageNeeds.neededNext);
+		if (_v0.a.$ === 'Error') {
+			var _v1 = _v0.a;
+			var needed = _v0.b;
+			return _List_fromArray(
+				[
+					$author$project$Client$getNeededStr(needed)
+				]);
+		} else {
+			var needed = _v0.b;
+			return A2($author$project$Client$getSuggestions, needed, input);
 		}
 	});
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
@@ -5437,8 +5439,9 @@ var $author$project$Client$viewStageStatus = function (hints) {
 		hints);
 };
 var $elm$html$Html$button = _VirtualDom_node('button');
-var $author$project$Client$viewSubmitButton = function (stageStatus) {
-	if (stageStatus.$ === 'CanComplete') {
+var $author$project$Client$viewSubmitButton = function (stageNeeds) {
+	var _v0 = stageNeeds.stageCode;
+	if (_v0.$ === 'Complete') {
 		return A2(
 			$elm$html$Html$button,
 			_List_Nil,
@@ -5469,11 +5472,11 @@ var $author$project$Client$view = function (model) {
 				$elm$html$Html$h1,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('text-3xl underline')
+						$elm$html$Html$Attributes$class('text-3xl')
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text('hello world')
+						$elm$html$Html$text('Diplomacy Helper!')
 					])),
 				A2(
 				$elm$html$Html$div,
@@ -5488,13 +5491,13 @@ var $author$project$Client$view = function (model) {
 								$elm$html$Html$Events$onInput($author$project$Client$TextAreaChange)
 							]),
 						_List_Nil),
-						$author$project$Client$viewSubmitButton(model.stageStatus)
+						$author$project$Client$viewSubmitButton(model.stageNeeds)
 					])),
 				A2(
 				$elm$html$Html$div,
 				_List_Nil,
 				$author$project$Client$viewStageStatus(
-					A2($author$project$Client$stageStatusInterpreter, model.stageStatus, model.input)))
+					A2($author$project$Client$stageStatusInterpreter, model.stageNeeds, model.input)))
 			]));
 };
 var $author$project$Client$main = $elm$browser$Browser$element(
