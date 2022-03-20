@@ -5148,9 +5148,9 @@ var $author$project$Hint$Continue = {$: 'Continue'};
 var $author$project$Client$initModel = {
 	input: '',
 	stageNeeds: {
+		currentStatus: $author$project$Hint$Continue,
 		neededNext: _List_fromArray(
-			['f', 'a']),
-		stageCode: $author$project$Hint$Continue
+			['f', 'a'])
 	}
 };
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
@@ -5160,9 +5160,9 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Hint$applyEvaluators = function (evaluators) {
 	if (!evaluators.b) {
 		return {
+			currentStatus: $author$project$Hint$Continue,
 			neededNext: _List_fromArray(
-				['']),
-			stageCode: $author$project$Hint$Continue
+				[''])
 		};
 	} else {
 		var first = evaluators.a;
@@ -5202,15 +5202,15 @@ var $elm$core$List$member = F2(
 			},
 			xs);
 	});
-var $author$project$Hint$getNewStageStatus = F3(
-	function (input, stageNeeds, nextStageNeeds) {
-		return A2($elm$core$List$member, input, stageNeeds.neededNext) ? nextStageNeeds(input) : _Utils_update(
+var $author$project$Hint$getNextStageNeeds = F3(
+	function (input, stageNeeds, getNextStageNeedsFrom) {
+		return A2($elm$core$List$member, input, stageNeeds.neededNext) ? getNextStageNeedsFrom(input) : _Utils_update(
 			stageNeeds,
-			{stageCode: $author$project$Hint$Error});
+			{currentStatus: $author$project$Hint$Error});
 	});
 var $author$project$Hint$fullEvaluator = F3(
-	function (nextStageNeeds, input, prevStage) {
-		var _v0 = _Utils_Tuple2(prevStage.neededNext, prevStage.stageCode);
+	function (getNextStageNeedsFromInput, input, prevStage) {
+		var _v0 = _Utils_Tuple2(prevStage.neededNext, prevStage.currentStatus);
 		if (_v0.b.$ === 'Error') {
 			var _v1 = _v0.b;
 			return prevStage;
@@ -5218,10 +5218,10 @@ var $author$project$Hint$fullEvaluator = F3(
 			var needed = _v0.a;
 			var code = _v0.b;
 			return A3(
-				$author$project$Hint$getNewStageStatus,
+				$author$project$Hint$getNextStageNeeds,
 				input,
-				{neededNext: needed, stageCode: code},
-				nextStageNeeds);
+				{currentStatus: code, neededNext: needed},
+				getNextStageNeedsFromInput);
 		}
 	});
 var $elm$core$Tuple$pair = F2(
@@ -5233,78 +5233,78 @@ var $author$project$Hint$stages = _List_fromArray(
 	[
 		function (_v0) {
 		return {
+			currentStatus: $author$project$Hint$Continue,
 			neededNext: _List_fromArray(
-				['f', 'a']),
-			stageCode: $author$project$Hint$Continue
+				['f', 'a'])
 		};
 	},
 		function (_v1) {
 		return {
+			currentStatus: $author$project$Hint$Continue,
 			neededNext: _List_fromArray(
-				['country']),
-			stageCode: $author$project$Hint$Continue
+				['country'])
 		};
 	},
 		function (_v2) {
 		return {
+			currentStatus: $author$project$Hint$Continue,
 			neededNext: _List_fromArray(
-				['move', '->', 'supports']),
-			stageCode: $author$project$Hint$Continue
+				['move', '->', 'supports'])
 		};
 	},
 		function (input) {
 		if (input === 'supports') {
 			return {
+				currentStatus: $author$project$Hint$Continue,
 				neededNext: _List_fromArray(
-					['f', 'a']),
-				stageCode: $author$project$Hint$Continue
+					['f', 'a'])
 			};
 		} else {
 			return {
+				currentStatus: $author$project$Hint$Continue,
 				neededNext: _List_fromArray(
-					['country']),
-				stageCode: $author$project$Hint$Continue
+					['country'])
 			};
 		}
 	},
 		function (input) {
 		if (input === 'country') {
-			return {neededNext: _List_Nil, stageCode: $author$project$Hint$Complete};
+			return {currentStatus: $author$project$Hint$Complete, neededNext: _List_Nil};
 		} else {
 			return {
+				currentStatus: $author$project$Hint$Continue,
 				neededNext: _List_fromArray(
-					['country']),
-				stageCode: $author$project$Hint$Continue
+					['country'])
 			};
 		}
 	},
 		function (input) {
 		if (input === 'country') {
 			return {
+				currentStatus: $author$project$Hint$Complete,
 				neededNext: _List_fromArray(
-					['move', '->']),
-				stageCode: $author$project$Hint$Complete
+					['move', '->'])
 			};
 		} else {
 			return {
+				currentStatus: $author$project$Hint$Continue,
 				neededNext: _List_fromArray(
-					['move', '->']),
-				stageCode: $author$project$Hint$Continue
+					['move', '->'])
 			};
 		}
 	},
 		function (_v6) {
 		return {
+			currentStatus: $author$project$Hint$Continue,
 			neededNext: _List_fromArray(
-				['country']),
-			stageCode: $author$project$Hint$Continue
+				['country'])
 		};
 	},
 		function (_v7) {
-		return {neededNext: _List_Nil, stageCode: $author$project$Hint$Complete};
+		return {currentStatus: $author$project$Hint$Complete, neededNext: _List_Nil};
 	},
 		function (_v8) {
-		return {neededNext: _List_Nil, stageCode: $author$project$Hint$Error};
+		return {currentStatus: $author$project$Hint$Error, neededNext: _List_Nil};
 	}
 	]);
 var $author$project$Hint$getPartialEvaluators = function (input) {
@@ -5409,7 +5409,7 @@ var $author$project$Client$getSuggestions = F2(
 	});
 var $author$project$Client$stageStatusInterpreter = F2(
 	function (stageNeeds, input) {
-		var _v0 = _Utils_Tuple2(stageNeeds.stageCode, stageNeeds.neededNext);
+		var _v0 = _Utils_Tuple2(stageNeeds.currentStatus, stageNeeds.neededNext);
 		if (_v0.a.$ === 'Error') {
 			var _v1 = _v0.a;
 			var needed = _v0.b;
@@ -5440,7 +5440,7 @@ var $author$project$Client$viewStageStatus = function (hints) {
 };
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $author$project$Client$viewSubmitButton = function (stageNeeds) {
-	var _v0 = stageNeeds.stageCode;
+	var _v0 = stageNeeds.currentStatus;
 	if (_v0.$ === 'Complete') {
 		return A2(
 			$elm$html$Html$button,

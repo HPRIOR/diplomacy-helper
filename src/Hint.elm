@@ -9,7 +9,7 @@ type StageCode
 
 type alias StageNeeds =
     { neededNext : List String
-    , stageCode : StageCode
+    , currentStatus : StageCode
     }
 
 
@@ -17,58 +17,65 @@ type alias Evaluator =
     StageNeeds -> StageNeeds
 
 
-getNewStageStatus : String -> StageNeeds -> (String -> StageNeeds) -> StageNeeds
-getNewStageStatus input stageNeeds nextStageNeeds =
+getNextStageNeeds : String -> StageNeeds -> (String -> StageNeeds) -> StageNeeds
+getNextStageNeeds input stageNeeds getNextStageNeedsFrom =
     if stageNeeds.neededNext |> List.member input then
-        nextStageNeeds input
+        getNextStageNeedsFrom input
 
     else
-        { stageNeeds | stageCode = Error }
+        { stageNeeds | currentStatus = Error }
 
 
 fullEvaluator : (String -> StageNeeds) -> String -> StageNeeds -> StageNeeds
-fullEvaluator nextStageNeeds input prevStage =
-    case ( prevStage.neededNext, prevStage.stageCode ) of
+fullEvaluator getNextStageNeedsFromInput input prevStage =
+    case ( prevStage.neededNext, prevStage.currentStatus ) of
         ( _, Error ) ->
+            -- pass through errors if any have previously occured
             prevStage
 
         ( needed, code ) ->
-            getNewStageStatus
+            getNextStageNeeds
                 input
-                { neededNext = needed, stageCode = code }
-                nextStageNeeds
+                { neededNext = needed, currentStatus = code }
+                getNextStageNeedsFromInput
 
 
 stages : List (String -> StageNeeds)
 stages =
-    [ \_ -> { neededNext = [ "f", "a" ], stageCode = Continue }
-    , \_ -> { neededNext = [ "country" ], stageCode = Continue }
-    , \_ -> { neededNext = [ "move", "->", "supports" ], stageCode = Continue }
+    [ \_ -> { neededNext = [ "f", "a" ], currentStatus = Continue }
+    , \_ -> { neededNext = [ "country" ], currentStatus = Continue }
+    , \_ -> { neededNext = [ "move", "->", "supports" ], currentStatus = Continue }
     , \input ->
         case input of
             "supports" ->
-                { neededNext = [ "f", "a" ], stageCode = Continue }
+                { neededNext = [ "f", "a" ], currentStatus = Continue }
 
             _ ->
-                { neededNext = [ "country" ], stageCode = Continue }
+                { neededNext = [ "country" ], currentStatus = Continue }
     , \input ->
         case input of
             "country" ->
-                { neededNext = [], stageCode = Complete }
+                { neededNext = [], currentStatus = Complete }
 
             _ ->
-                { neededNext = [ "country" ], stageCode = Continue }
+                { neededNext = [ "country" ], currentStatus = Continue }
     , \input ->
         case input of
             "country" ->
-                { neededNext = [ "move", "->" ], stageCode = Complete }
+                { neededNext = [ "move", "->" ], currentStatus = Complete }
 
             _ ->
-                { neededNext = [ "move", "->" ], stageCode = Continue }
-    , \_ -> { neededNext = [ "country" ], stageCode = Continue }
-    , \_ -> { neededNext = [], stageCode = Complete }
-    , \_ -> { neededNext = [], stageCode = Error }
+                { neededNext = [ "move", "->" ], currentStatus = Continue }
+    , \_ -> { neededNext = [ "country" ], currentStatus = Continue }
+    , \_ -> { neededNext = [], currentStatus = Complete }
+    , \_ -> { neededNext = [], currentStatus = Error }
     ]
+
+
+
+{-
+   Partial application returns a series of functions with stages and input fullfilled
+-}
 
 
 getPartialEvaluators : List String -> List Evaluator
@@ -81,13 +88,22 @@ getPartialEvaluators input =
             (\( stageNeeds, str ) -> fullEvaluator stageNeeds str)
 
 
+
+{-
+   Each partially applied function is given the results of the previous stage in order to 'bubble up' errors
+
+   The last result will be returned which can indicating the status and requirements at the given input state
+   (Error, Continue, Complete)
+-}
+
+
 applyEvaluators : List Evaluator -> StageNeeds
 applyEvaluators evaluators =
     case evaluators of
         [] ->
             -- seed algorithm with empty base case
             { neededNext = [ "" ]
-            , stageCode = Continue
+            , currentStatus = Continue
             }
 
         first :: rest ->

@@ -34,7 +34,7 @@ getNeededStr needed =
 
 stageStatusInterpreter : StageNeeds -> String -> List String
 stageStatusInterpreter stageNeeds input =
-    case ( stageNeeds.stageCode, stageNeeds.neededNext ) of
+    case ( stageNeeds.currentStatus, stageNeeds.neededNext ) of
         ( Error, needed ) ->
             [ getNeededStr needed ]
 
@@ -49,7 +49,7 @@ viewStageStatus hints =
 
 viewSubmitButton : StageNeeds -> Html Msg
 viewSubmitButton stageNeeds =
-    case stageNeeds.stageCode of
+    case stageNeeds.currentStatus of
         Complete ->
             button [] [ text "Can Submit" ]
 
@@ -87,7 +87,7 @@ update msg model =
 initModel : Model
 initModel =
     { stageNeeds =
-        { neededNext = [ "f", "a" ], stageCode = Continue }
+        { neededNext = [ "f", "a" ], currentStatus = Continue }
     , input = ""
     }
 
