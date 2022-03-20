@@ -23,6 +23,7 @@ getNextStageNeeds input stageNeeds getNextStageNeedsFrom =
         getNextStageNeedsFrom input
 
     else
+        -- no requirements have been fullfulled by current input
         { stageNeeds | currentStatus = Error }
 
 
