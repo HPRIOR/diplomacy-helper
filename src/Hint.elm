@@ -72,12 +72,8 @@ stages =
     ]
 
 
-
-{-
-   Partial application returns a series of functions with stages and input fullfilled
+{-| Partial application returns a series of functions with stages and input fullfilled
 -}
-
-
 getPartialEvaluators : List String -> List Evaluator
 getPartialEvaluators input =
     List.map2
@@ -88,15 +84,11 @@ getPartialEvaluators input =
             (\( stageNeeds, str ) -> fullEvaluator stageNeeds str)
 
 
+{-| Each partially applied function is given the results of the previous stage in order to 'bubble up' errors
 
-{-
-   Each partially applied function is given the results of the previous stage in order to 'bubble up' errors
+The last result will be returned which can indicating the status and requirements at the given input state (Error, Continue, Complete)
 
-   The last result will be returned which can indicating the status and requirements at the given input state
-   (Error, Continue, Complete)
 -}
-
-
 applyEvaluators : List Evaluator -> StageNeeds
 applyEvaluators evaluators =
     case evaluators of
@@ -110,6 +102,8 @@ applyEvaluators evaluators =
             first (applyEvaluators rest)
 
 
+{-| Returns the result of the status of the input state along with any requirements for the next part of the input
+-}
 getStageStatus : String -> StageNeeds
 getStageStatus str =
     ""
