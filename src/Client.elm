@@ -35,7 +35,7 @@ getNeededStr needed =
 stageStatusInterpreter : StageNeeds -> String -> List String
 stageStatusInterpreter stageNeeds input =
     case ( stageNeeds.currentStatus, stageNeeds.neededNext ) of
-        ( Error, needed ) ->
+        ( Error _, needed ) ->
             [ getNeededStr needed ]
 
         ( _, needed ) ->

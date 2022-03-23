@@ -1,10 +1,12 @@
 module Hint exposing (StageCode(..), StageNeeds, getStageStatus)
 
+type StageError 
+    = InputError
 
 type StageCode
     = Complete
     | Continue
-    | Error
+    | Error StageError
 
 
 type alias StageNeeds =
@@ -24,13 +26,13 @@ getNextStageNeeds input stageNeeds getNextStageNeedsFrom =
 
     else
         -- no requirements have been fullfulled by current input
-        { stageNeeds | currentStatus = Error }
+        { stageNeeds | currentStatus = Error InputError }
 
 
 fullEvaluator : (String -> StageNeeds) -> String -> StageNeeds -> StageNeeds
 fullEvaluator getNextStageNeedsFromInput input prevStage =
     case ( prevStage.neededNext, prevStage.currentStatus ) of
-        ( _, Error ) ->
+        ( _, Error _ ) ->
             -- pass through errors if any have previously occured
             prevStage
 
@@ -69,7 +71,7 @@ stages =
                 { neededNext = [ "move", "->" ], currentStatus = Continue }
     , \_ -> { neededNext = [ "country" ], currentStatus = Continue }
     , \_ -> { neededNext = [], currentStatus = Complete }
-    , \_ -> { neededNext = [], currentStatus = Error }
+    , \_ -> { neededNext = [], currentStatus = Error InputError }
     ]
 
 

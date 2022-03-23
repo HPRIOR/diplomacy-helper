@@ -5171,7 +5171,10 @@ var $author$project$Hint$applyEvaluators = function (evaluators) {
 			$author$project$Hint$applyEvaluators(rest));
 	}
 };
-var $author$project$Hint$Error = {$: 'Error'};
+var $author$project$Hint$Error = function (a) {
+	return {$: 'Error', a: a};
+};
+var $author$project$Hint$InputError = {$: 'InputError'};
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
 		any:
@@ -5206,13 +5209,14 @@ var $author$project$Hint$getNextStageNeeds = F3(
 	function (input, stageNeeds, getNextStageNeedsFrom) {
 		return A2($elm$core$List$member, input, stageNeeds.neededNext) ? getNextStageNeedsFrom(input) : _Utils_update(
 			stageNeeds,
-			{currentStatus: $author$project$Hint$Error});
+			{
+				currentStatus: $author$project$Hint$Error($author$project$Hint$InputError)
+			});
 	});
 var $author$project$Hint$fullEvaluator = F3(
 	function (getNextStageNeedsFromInput, input, prevStage) {
 		var _v0 = _Utils_Tuple2(prevStage.neededNext, prevStage.currentStatus);
 		if (_v0.b.$ === 'Error') {
-			var _v1 = _v0.b;
 			return prevStage;
 		} else {
 			var needed = _v0.a;
@@ -5304,7 +5308,10 @@ var $author$project$Hint$stages = _List_fromArray(
 		return {currentStatus: $author$project$Hint$Complete, neededNext: _List_Nil};
 	},
 		function (_v8) {
-		return {currentStatus: $author$project$Hint$Error, neededNext: _List_Nil};
+		return {
+			currentStatus: $author$project$Hint$Error($author$project$Hint$InputError),
+			neededNext: _List_Nil
+		};
 	}
 	]);
 var $author$project$Hint$getPartialEvaluators = function (input) {
@@ -5411,7 +5418,6 @@ var $author$project$Client$stageStatusInterpreter = F2(
 	function (stageNeeds, input) {
 		var _v0 = _Utils_Tuple2(stageNeeds.currentStatus, stageNeeds.neededNext);
 		if (_v0.a.$ === 'Error') {
-			var _v1 = _v0.a;
 			var needed = _v0.b;
 			return _List_fromArray(
 				[
