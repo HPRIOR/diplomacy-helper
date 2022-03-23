@@ -87,7 +87,7 @@ update msg model =
 initModel : Model
 initModel =
     { stageNeeds =
-        { neededNext = [ "f", "a" ], currentStatus = Continue }
+        { neededNext = [ "f", "a" ], currentStatus = Continue, stageCategory = UnitType }
     , input = ""
     }
 

@@ -1,12 +1,18 @@
-module Hint exposing (StageCode(..), StageNeeds, getStageStatus)
+module Hint exposing (StageCode(..), StageNeeds, getStageStatus, StageCategory(..))
 
 countries : List String
 countries =
-    [ "AdriaticSea", "adr", "adriatic", "AegeanSea", "aeg", "aegean", "Albania", "alb", "Ankara", "ank", "Apulia", "apu", "Armenia", "arm", "BalticSea", "bal", "baltic", "BarentsSea", "bar", "barents", "Belgium", "bel", "Berlin", "ber", "BlackSea", "bla", "black", "Bohemia", "boh", "Brest", "bre", "Budapest", "bud", "Bulgaria", "bul", "Burgundy", "bur", "Clyde", "cly", "Constantinople", "con", "Denmark", "den", "EasternMediterranean", "eas", "emed", "east", "eastmed", "ems", "eme", "Edinburgh", "edi", "EnglishChannel", "eng", "EnglishChannel", "ech", "Finland", "fin", "Galicia", "gal", "Gascony", "gas", "Greece", "gre", "GulfofLyon", "lyo", "gol", "gulfofl", "lyon", "GulfofBothnia", "bot", "gob", "both", "gulfofb", "bothnia", "HelgolandBight", "hel", "helgoland", "Holland", "hol", "IonianSea", "ion", "ionian", "Ireland", "ire", "IrishSea", "iri", "irish", "Kiel", "kie", "Liverpool", "lvp", "livp", "lpl", "Livonia", "lvn", "livo", "lvo", "lva", "London", "lon", "Marseilles", "mar", "mars", "Mid-AtlanticOcean", "mao", "midatlantic", "mid", "mat", "Moscow", "mos", "Munich", "mun", "Naples", "nap", "napoli", "NorthAtlanticOcean", "nao", "nat", "NorthAfrica", "naf", "nora", "NorthSea", "nth", "norsea", "nts", "Norway", "nor", "nwy", "norw", "NorwegianSea", "nwg", "norwsea", "nrg", "norwegian", "Paris", "par", "Picardy", "pic", "Piedmont", "pie", "piemonte", "Portugal", "por", "Prussia", "pru", "Rome", "rom", "roma", "Ruhr", "ruh", "Rumania", "rum", "Serbia", "ser", "Sevastopol", "sev", "sevastapol", "Silesia", "sil", "Skagerrak", "ska", "Smyrna", "smy", "Spain", "spa", "StPetersburg", "stp", "Sweden", "swe", "Switzerlandswi", "switz", "Syria", "syr", "Trieste", "tri", "Tunis", "tun", "tunisia", "Tuscany", "tus", "Tyrolia", "tyr", "tyl", "trl", "TyrrhenianSea", "tys", "tyrr", "tyn", "tyh", "Ukraine", "ukr", "Venice", "ven", "venizia", "Vienna", "vie", "Wales", "wal", "Warsaw", "war", "WesternMediterranean", "wes", "wmed", "west", "western", "wms", "wme", "Yorkshire", "yor", "york", "yonkers" ]
+    [ "Adriatic Sea", "adr", "adriatic", "Aegean Sea", "aeg", "aegean", "Albania", "alb", "Ankara", "ank", "Apulia", "apu", "Armenia", "arm", "Baltic Sea", "bal", "baltic", "Barents Sea", "bar", "barents", "Belgium", "bel", "Berlin", "ber", "Black Sea", "bla", "black", "Bohemia", "boh", "Brest", "bre", "Budapest", "bud", "Bulgaria", "bul", "Burgundy", "bur", "Clyde", "cly", "Constantinople", "con", "Denmark", "den", "EasternMediterranean", "eas", "emed", "east", "eastmed", "ems", "eme", "Edinburgh", "edi", "EnglishChannel", "eng", "EnglishChannel", "ech", "Finland", "fin", "Galicia", "gal", "Gascony", "gas", "Greece", "gre", "GulfofLyon", "lyo", "gol", "gulfofl", "lyon", "GulfofBothnia", "bot", "gob", "both", "gulfofb", "bothnia", "HelgolandBight", "hel", "helgoland", "Holland", "hol", "Ionian Sea", "ion", "ionian", "Ireland", "ire", "Irish Sea", "iri", "irish", "Kiel", "kie", "Liverpool", "lvp", "livp", "lpl", "Livonia", "lvn", "livo", "lvo", "lva", "London", "lon", "Marseilles", "mar", "mars", "Mid-AtlanticOcean", "mao", "midatlantic", "mid", "mat", "Moscow", "mos", "Munich", "mun", "Naples", "nap", "napoli", "NorthAtlanticOcean", "nao", "nat", "NorthAfrica", "naf", "nora", "North Sea", "nth", "norsea", "nts", "Norway", "nor", "nwy", "norw", "Norwegian Sea", "nwg", "norwsea", "nrg", "norwegian", "Paris", "par", "Picardy", "pic", "Piedmont", "pie", "piemonte", "Portugal", "por", "Prussia", "pru", "Rome", "rom", "roma", "Ruhr", "ruh", "Rumania", "rum", "Serbia", "ser", "Sevastopol", "sev", "sevastapol", "Silesia", "sil", "Skagerrak", "ska", "Smyrna", "smy", "Spain", "spa", "StPetersburg", "stp", "Sweden", "swe", "Switzerlandswi", "switz", "Syria", "syr", "Trieste", "tri", "Tunis", "tun", "tunisia", "Tuscany", "tus", "Tyrolia", "tyr", "tyl", "trl", "Tyrrhenian Sea", "tys", "tyrr", "tyn", "tyh", "Ukraine", "ukr", "Venice", "ven", "venizia", "Vienna", "vie", "Wales", "wal", "Warsaw", "war", "WesternMediterranean", "wes", "wmed", "west", "western", "wms", "wme", "Yorkshire", "yor", "york", "yonkers" ]
 
 
 type StageError
     = InputError
+
+type StageCategory
+    = UnitType
+    | Country
+    | Command
+    | None
 
 
 type StageCode
@@ -17,6 +23,7 @@ type StageCode
 
 type alias StageNeeds =
     { neededNext : List String
+    , stageCategory : StageCategory
     , currentStatus : StageCode
     }
 
@@ -37,47 +44,47 @@ getNextStageNeeds input stageNeeds getNextStageNeedsFrom =
 
 fullEvaluator : (String -> StageNeeds) -> String -> StageNeeds -> StageNeeds
 fullEvaluator getNextStageNeedsFromInput input prevStage =
-    case ( prevStage.neededNext, prevStage.currentStatus ) of
-        ( _, Error _ ) ->
+    case ( prevStage.neededNext, prevStage.currentStatus, prevStage.stageCategory ) of
+        ( _, Error _, _) ->
             -- pass through errors if any have previously occured
             prevStage
 
-        ( needed, code ) ->
+        ( needed, code, category ) ->
             getNextStageNeeds
                 input
-                { neededNext = needed, currentStatus = code }
+                { neededNext = needed, currentStatus = code, stageCategory = category }
                 getNextStageNeedsFromInput
 
 
 stages : List (String -> StageNeeds)
 stages =
-    [ \_ -> { neededNext = [ "f", "a" ], currentStatus = Continue }
-    , \_ -> { neededNext = countries, currentStatus = Continue }
-    , \_ -> { neededNext = [ "move", "->", "supports" ], currentStatus = Continue }
+    [ \_ -> { neededNext = [ "f", "a" ], currentStatus = Continue, stageCategory = UnitType }
+    , \_ -> { neededNext = countries, currentStatus = Continue, stageCategory = Country }
+    , \_ -> { neededNext = [ "move", "->", "supports" ], currentStatus = Continue, stageCategory = Command }
     , \input ->
         case input of
             "supports" ->
-                { neededNext = [ "f", "a" ], currentStatus = Continue }
+                { neededNext = [ "f", "a" ], currentStatus = Continue, stageCategory = UnitType }
 
             _ ->
-                { neededNext = countries, currentStatus = Continue }
+                { neededNext = countries, currentStatus = Continue, stageCategory = Country }
     , \input ->
         case input of
             "country" ->
-                { neededNext = [], currentStatus = Complete }
+                { neededNext = [], currentStatus = Complete, stageCategory =  None }
 
             _ ->
-                { neededNext = countries, currentStatus = Continue }
+                { neededNext = countries, currentStatus = Continue, stageCategory = Country }
     , \input ->
         case input of
             "country" ->
-                { neededNext = [ "move", "->" ], currentStatus = Complete }
+                { neededNext = [ "move", "->" ], currentStatus = Complete, stageCategory =Country }
 
             _ ->
-                { neededNext = [ "move", "->" ], currentStatus = Continue }
-    , \_ -> { neededNext = countries, currentStatus = Continue }
-    , \_ -> { neededNext = [], currentStatus = Complete }
-    , \_ -> { neededNext = [], currentStatus = Error InputError }
+                { neededNext = [ "move", "->" ], currentStatus = Continue, stageCategory = Command }
+    , \_ -> { neededNext = countries, currentStatus = Continue, stageCategory = Country }
+    , \_ -> { neededNext = [], currentStatus = Complete, stageCategory = None }
+    , \_ -> { neededNext = [], currentStatus = Error InputError, stageCategory = None }
     ]
 
 
@@ -105,6 +112,7 @@ applyEvaluators evaluators =
             -- seed algorithm with empty base case
             { neededNext = [ "" ]
             , currentStatus = Continue
+            , stageCategory = None
             }
 
         first :: rest ->
