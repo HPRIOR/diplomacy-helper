@@ -5233,6 +5233,8 @@ var $elm$core$Tuple$pair = F2(
 		return _Utils_Tuple2(a, b);
 	});
 var $author$project$Hint$Complete = {$: 'Complete'};
+var $author$project$Hint$countries = _List_fromArray(
+	['AdriaticSea', 'adr', 'adriatic', 'AegeanSea', 'aeg', 'aegean', 'Albania', 'alb', 'Ankara', 'ank', 'Apulia', 'apu', 'Armenia', 'arm', 'BalticSea', 'bal', 'baltic', 'BarentsSea', 'bar', 'barents', 'Belgium', 'bel', 'Berlin', 'ber', 'BlackSea', 'bla', 'black', 'Bohemia', 'boh', 'Brest', 'bre', 'Budapest', 'bud', 'Bulgaria', 'bul', 'Burgundy', 'bur', 'Clyde', 'cly', 'Constantinople', 'con', 'Denmark', 'den', 'EasternMediterranean', 'eas', 'emed', 'east', 'eastmed', 'ems', 'eme', 'Edinburgh', 'edi', 'EnglishChannel', 'eng', 'EnglishChannel', 'ech', 'Finland', 'fin', 'Galicia', 'gal', 'Gascony', 'gas', 'Greece', 'gre', 'GulfofLyon', 'lyo', 'gol', 'gulfofl', 'lyon', 'GulfofBothnia', 'bot', 'gob', 'both', 'gulfofb', 'bothnia', 'HelgolandBight', 'hel', 'helgoland', 'Holland', 'hol', 'IonianSea', 'ion', 'ionian', 'Ireland', 'ire', 'IrishSea', 'iri', 'irish', 'Kiel', 'kie', 'Liverpool', 'lvp', 'livp', 'lpl', 'Livonia', 'lvn', 'livo', 'lvo', 'lva', 'London', 'lon', 'Marseilles', 'mar', 'mars', 'Mid-AtlanticOcean', 'mao', 'midatlantic', 'mid', 'mat', 'Moscow', 'mos', 'Munich', 'mun', 'Naples', 'nap', 'napoli', 'NorthAtlanticOcean', 'nao', 'nat', 'NorthAfrica', 'naf', 'nora', 'NorthSea', 'nth', 'norsea', 'nts', 'Norway', 'nor', 'nwy', 'norw', 'NorwegianSea', 'nwg', 'norwsea', 'nrg', 'norwegian', 'Paris', 'par', 'Picardy', 'pic', 'Piedmont', 'pie', 'piemonte', 'Portugal', 'por', 'Prussia', 'pru', 'Rome', 'rom', 'roma', 'Ruhr', 'ruh', 'Rumania', 'rum', 'Serbia', 'ser', 'Sevastopol', 'sev', 'sevastapol', 'Silesia', 'sil', 'Skagerrak', 'ska', 'Smyrna', 'smy', 'Spain', 'spa', 'StPetersburg', 'stp', 'Sweden', 'swe', 'Switzerlandswi', 'switz', 'Syria', 'syr', 'Trieste', 'tri', 'Tunis', 'tun', 'tunisia', 'Tuscany', 'tus', 'Tyrolia', 'tyr', 'tyl', 'trl', 'TyrrhenianSea', 'tys', 'tyrr', 'tyn', 'tyh', 'Ukraine', 'ukr', 'Venice', 'ven', 'venizia', 'Vienna', 'vie', 'Wales', 'wal', 'Warsaw', 'war', 'WesternMediterranean', 'wes', 'wmed', 'west', 'western', 'wms', 'wme', 'Yorkshire', 'yor', 'york', 'yonkers']);
 var $author$project$Hint$stages = _List_fromArray(
 	[
 		function (_v0) {
@@ -5243,11 +5245,7 @@ var $author$project$Hint$stages = _List_fromArray(
 		};
 	},
 		function (_v1) {
-		return {
-			currentStatus: $author$project$Hint$Continue,
-			neededNext: _List_fromArray(
-				['country'])
-		};
+		return {currentStatus: $author$project$Hint$Continue, neededNext: $author$project$Hint$countries};
 	},
 		function (_v2) {
 		return {
@@ -5264,22 +5262,14 @@ var $author$project$Hint$stages = _List_fromArray(
 					['f', 'a'])
 			};
 		} else {
-			return {
-				currentStatus: $author$project$Hint$Continue,
-				neededNext: _List_fromArray(
-					['country'])
-			};
+			return {currentStatus: $author$project$Hint$Continue, neededNext: $author$project$Hint$countries};
 		}
 	},
 		function (input) {
 		if (input === 'country') {
 			return {currentStatus: $author$project$Hint$Complete, neededNext: _List_Nil};
 		} else {
-			return {
-				currentStatus: $author$project$Hint$Continue,
-				neededNext: _List_fromArray(
-					['country'])
-			};
+			return {currentStatus: $author$project$Hint$Continue, neededNext: $author$project$Hint$countries};
 		}
 	},
 		function (input) {
@@ -5298,11 +5288,7 @@ var $author$project$Hint$stages = _List_fromArray(
 		}
 	},
 		function (_v6) {
-		return {
-			currentStatus: $author$project$Hint$Continue,
-			neededNext: _List_fromArray(
-				['country'])
-		};
+		return {currentStatus: $author$project$Hint$Continue, neededNext: $author$project$Hint$countries};
 	},
 		function (_v7) {
 		return {currentStatus: $author$project$Hint$Complete, neededNext: _List_Nil};

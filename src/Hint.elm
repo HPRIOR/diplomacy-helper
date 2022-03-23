@@ -1,7 +1,13 @@
 module Hint exposing (StageCode(..), StageNeeds, getStageStatus)
 
-type StageError 
+countries : List String
+countries =
+    [ "AdriaticSea", "adr", "adriatic", "AegeanSea", "aeg", "aegean", "Albania", "alb", "Ankara", "ank", "Apulia", "apu", "Armenia", "arm", "BalticSea", "bal", "baltic", "BarentsSea", "bar", "barents", "Belgium", "bel", "Berlin", "ber", "BlackSea", "bla", "black", "Bohemia", "boh", "Brest", "bre", "Budapest", "bud", "Bulgaria", "bul", "Burgundy", "bur", "Clyde", "cly", "Constantinople", "con", "Denmark", "den", "EasternMediterranean", "eas", "emed", "east", "eastmed", "ems", "eme", "Edinburgh", "edi", "EnglishChannel", "eng", "EnglishChannel", "ech", "Finland", "fin", "Galicia", "gal", "Gascony", "gas", "Greece", "gre", "GulfofLyon", "lyo", "gol", "gulfofl", "lyon", "GulfofBothnia", "bot", "gob", "both", "gulfofb", "bothnia", "HelgolandBight", "hel", "helgoland", "Holland", "hol", "IonianSea", "ion", "ionian", "Ireland", "ire", "IrishSea", "iri", "irish", "Kiel", "kie", "Liverpool", "lvp", "livp", "lpl", "Livonia", "lvn", "livo", "lvo", "lva", "London", "lon", "Marseilles", "mar", "mars", "Mid-AtlanticOcean", "mao", "midatlantic", "mid", "mat", "Moscow", "mos", "Munich", "mun", "Naples", "nap", "napoli", "NorthAtlanticOcean", "nao", "nat", "NorthAfrica", "naf", "nora", "NorthSea", "nth", "norsea", "nts", "Norway", "nor", "nwy", "norw", "NorwegianSea", "nwg", "norwsea", "nrg", "norwegian", "Paris", "par", "Picardy", "pic", "Piedmont", "pie", "piemonte", "Portugal", "por", "Prussia", "pru", "Rome", "rom", "roma", "Ruhr", "ruh", "Rumania", "rum", "Serbia", "ser", "Sevastopol", "sev", "sevastapol", "Silesia", "sil", "Skagerrak", "ska", "Smyrna", "smy", "Spain", "spa", "StPetersburg", "stp", "Sweden", "swe", "Switzerlandswi", "switz", "Syria", "syr", "Trieste", "tri", "Tunis", "tun", "tunisia", "Tuscany", "tus", "Tyrolia", "tyr", "tyl", "trl", "TyrrhenianSea", "tys", "tyrr", "tyn", "tyh", "Ukraine", "ukr", "Venice", "ven", "venizia", "Vienna", "vie", "Wales", "wal", "Warsaw", "war", "WesternMediterranean", "wes", "wmed", "west", "western", "wms", "wme", "Yorkshire", "yor", "york", "yonkers" ]
+
+
+type StageError
     = InputError
+
 
 type StageCode
     = Complete
@@ -46,7 +52,7 @@ fullEvaluator getNextStageNeedsFromInput input prevStage =
 stages : List (String -> StageNeeds)
 stages =
     [ \_ -> { neededNext = [ "f", "a" ], currentStatus = Continue }
-    , \_ -> { neededNext = [ "country" ], currentStatus = Continue }
+    , \_ -> { neededNext = countries, currentStatus = Continue }
     , \_ -> { neededNext = [ "move", "->", "supports" ], currentStatus = Continue }
     , \input ->
         case input of
@@ -54,14 +60,14 @@ stages =
                 { neededNext = [ "f", "a" ], currentStatus = Continue }
 
             _ ->
-                { neededNext = [ "country" ], currentStatus = Continue }
+                { neededNext = countries, currentStatus = Continue }
     , \input ->
         case input of
             "country" ->
                 { neededNext = [], currentStatus = Complete }
 
             _ ->
-                { neededNext = [ "country" ], currentStatus = Continue }
+                { neededNext = countries, currentStatus = Continue }
     , \input ->
         case input of
             "country" ->
@@ -69,7 +75,7 @@ stages =
 
             _ ->
                 { neededNext = [ "move", "->" ], currentStatus = Continue }
-    , \_ -> { neededNext = [ "country" ], currentStatus = Continue }
+    , \_ -> { neededNext = countries, currentStatus = Continue }
     , \_ -> { neededNext = [], currentStatus = Complete }
     , \_ -> { neededNext = [], currentStatus = Error InputError }
     ]
