@@ -26,25 +26,21 @@ getSuggestions needed input =
     needed |> List.map (\s -> input ++ " " ++ s)
 
 
-getNeededStr : List String -> String
-getNeededStr needed =
-    needed
-        |> List.foldr (\a b -> a ++ ", " ++ b) " "
+getHintsForCurrentInput : String -> List String -> List String
+getHintsForCurrentInput input hints =
+    if String.length input > 0 then
+        hints |> List.filter (\hint -> String.contains input hint)
+
+    else
+        hints
 
 
-stageStatusInterpreter : StageNeeds -> String -> List String
-stageStatusInterpreter stageNeeds input =
-    case ( stageNeeds.currentStatus, stageNeeds.neededNext ) of
-        ( Error _, needed ) ->
-            [ getNeededStr needed ]
-
-        ( _, needed ) ->
-            getSuggestions needed input
-
-
-viewStageStatus : List String -> List (Html Msg)
-viewStageStatus hints =
-    hints |> List.map (\hint -> div [] [ text hint ])
+viewStageStatus : List String -> String -> List (Html Msg)
+viewStageStatus hints input =
+    hints
+        |> getHintsForCurrentInput input
+        |> List.map (\hint -> div [] [ text hint ])
+        |> List.take 10
 
 
 viewSubmitButton : StageNeeds -> Html Msg
@@ -65,7 +61,7 @@ view model =
             [ input [ class "mt-5 mb-5", onInput TextAreaChange ] []
             , viewSubmitButton model.stageNeeds
             ]
-        , div [] (viewStageStatus (stageStatusInterpreter model.stageNeeds model.input))
+        , div [] (viewStageStatus (getSuggestions model.stageNeeds.neededNext model.input) model.input)
         ]
 
 
