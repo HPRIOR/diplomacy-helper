@@ -35,7 +35,9 @@ viewSubmitButton stageNeeds =
 -}
 getHints : List String -> String -> List String
 getHints needed input =
-    needed |> List.map (\s -> input ++ " " ++ s)
+    if String.length input /= 0 then
+        needed |> List.map (\s -> input ++ " " ++ s)
+    else needed
 
 
 {-| Converts suggested inputs to html

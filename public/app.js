@@ -5361,14 +5361,15 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$Client$getHints = F2(
 	function (needed, input) {
-		return A2(
+		return (!(!$elm$core$String$length(input))) ? A2(
 			$elm$core$List$map,
 			function (s) {
 				return input + (' ' + s);
 			},
-			needed);
+			needed) : needed;
 	});
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$input = _VirtualDom_node('input');
