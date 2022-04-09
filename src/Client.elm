@@ -21,28 +21,6 @@ type Msg
 -- VIEW
 
 
-getSuggestions : List String -> String -> List String
-getSuggestions needed input =
-    needed |> List.map (\s -> input ++ " " ++ s)
-
-
-getHintsForCurrentInput : String -> List String -> List String
-getHintsForCurrentInput input hints =
-    if String.length input > 0 then
-        hints |> List.filter (\hint -> String.contains input hint)
-
-    else
-        hints
-
-
-viewStageStatus : List String -> String -> List (Html Msg)
-viewStageStatus hints input =
-    hints
-        |> getHintsForCurrentInput input
-        |> List.map (\hint -> div [] [ text hint ])
-        |> List.take 10
-
-
 viewSubmitButton : StageNeeds -> Html Msg
 viewSubmitButton stageNeeds =
     case stageNeeds.currentStatus of
@@ -53,6 +31,22 @@ viewSubmitButton stageNeeds =
             button [] [ text "Can't Submit" ]
 
 
+{-| Appends the current input with any required input needed to progress to the next stage. 
+-}
+getHints : List String -> String -> List String
+getHints needed input =
+    needed |> List.map (\s -> input ++ " " ++ s)
+
+
+{-| Converts suggested inputs to html
+-}
+viewHints : List String -> List (Html Msg)
+viewHints hints =
+    hints
+        |> List.map (\hint -> div [] [ text hint ])
+        |> List.take 10
+
+
 view : Model -> Html Msg
 view model =
     div [ class "flex flex-col items-center" ]
@@ -61,7 +55,12 @@ view model =
             [ input [ class "mt-5 mb-5", onInput TextAreaChange ] []
             , viewSubmitButton model.stageNeeds
             ]
-        , div [] (viewStageStatus (getSuggestions model.stageNeeds.neededNext model.input) model.input)
+        , div [] <|
+            let
+                hints =
+                    getHints model.stageNeeds.neededNext model.input
+            in
+            viewHints hints
         ]
 
 

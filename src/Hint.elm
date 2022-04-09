@@ -1,12 +1,14 @@
-module Hint exposing (StageCode(..), StageNeeds, getStageStatus, StageCategory(..))
+module Hint exposing (StageCategory(..), StageCode(..), StageNeeds, getStageStatus)
+
 
 countries : List String
 countries =
-    [ "Adriatic Sea", "adr", "adriatic", "Aegean Sea", "aeg", "aegean", "Albania", "alb", "Ankara", "ank", "Apulia", "apu", "Armenia", "arm", "Baltic Sea", "bal", "baltic", "Barents Sea", "bar", "barents", "Belgium", "bel", "Berlin", "ber", "Black Sea", "bla", "black", "Bohemia", "boh", "Brest", "bre", "Budapest", "bud", "Bulgaria", "bul", "Burgundy", "bur", "Clyde", "cly", "Constantinople", "con", "Denmark", "den", "EasternMediterranean", "eas", "emed", "east", "eastmed", "ems", "eme", "Edinburgh", "edi", "EnglishChannel", "eng", "EnglishChannel", "ech", "Finland", "fin", "Galicia", "gal", "Gascony", "gas", "Greece", "gre", "GulfofLyon", "lyo", "gol", "gulfofl", "lyon", "GulfofBothnia", "bot", "gob", "both", "gulfofb", "bothnia", "HelgolandBight", "hel", "helgoland", "Holland", "hol", "Ionian Sea", "ion", "ionian", "Ireland", "ire", "Irish Sea", "iri", "irish", "Kiel", "kie", "Liverpool", "lvp", "livp", "lpl", "Livonia", "lvn", "livo", "lvo", "lva", "London", "lon", "Marseilles", "mar", "mars", "Mid-AtlanticOcean", "mao", "midatlantic", "mid", "mat", "Moscow", "mos", "Munich", "mun", "Naples", "nap", "napoli", "NorthAtlanticOcean", "nao", "nat", "NorthAfrica", "naf", "nora", "North Sea", "nth", "norsea", "nts", "Norway", "nor", "nwy", "norw", "Norwegian Sea", "nwg", "norwsea", "nrg", "norwegian", "Paris", "par", "Picardy", "pic", "Piedmont", "pie", "piemonte", "Portugal", "por", "Prussia", "pru", "Rome", "rom", "roma", "Ruhr", "ruh", "Rumania", "rum", "Serbia", "ser", "Sevastopol", "sev", "sevastapol", "Silesia", "sil", "Skagerrak", "ska", "Smyrna", "smy", "Spain", "spa", "StPetersburg", "stp", "Sweden", "swe", "Switzerlandswi", "switz", "Syria", "syr", "Trieste", "tri", "Tunis", "tun", "tunisia", "Tuscany", "tus", "Tyrolia", "tyr", "tyl", "trl", "Tyrrhenian Sea", "tys", "tyrr", "tyn", "tyh", "Ukraine", "ukr", "Venice", "ven", "venizia", "Vienna", "vie", "Wales", "wal", "Warsaw", "war", "WesternMediterranean", "wes", "wmed", "west", "western", "wms", "wme", "Yorkshire", "yor", "york", "yonkers" ]
+    [ "ADR", "AEG", "Alb", "Ank", "Apu", "Arm", "BAL", "BAR", "Bel", "Ber", "BLA", "Boh", "Bre", "Bud", "Bul", "Bur", "Cly", "Con", "Den", "EMS", "Edi", "ENG", "Fin", "Gal", "Gas", "GOB", "GOL", "Gre", "HEL", "Hol", "ION", "IRS", "Kie", "Liv", "Lvp", "Lon", "MAO", "Mar", "Mos", "Mun", "Naf", "NAO", "Nap", "NTH", "Nwy", "NWG", "Par", "Pic", "Pie", "Por", "Pru", "Rom", "Ruh", "Rum", "Ser", "Sev", "Sil", "SKA", "Smy", "Spa", "Stp", "Swe", "Syr", "Tri", "Tun", "Tus", "Tyr", "TYS", "Ukr", "Ven", "Vie", "Wal", "War", "WMS", "Yor" ]
 
 
 type StageError
     = InputError
+
 
 type StageCategory
     = UnitType
@@ -45,7 +47,7 @@ getNextStageNeeds input stageNeeds getNextStageNeedsFrom =
 fullEvaluator : (String -> StageNeeds) -> String -> StageNeeds -> StageNeeds
 fullEvaluator getNextStageNeedsFromInput input prevStage =
     case ( prevStage.neededNext, prevStage.currentStatus, prevStage.stageCategory ) of
-        ( _, Error _, _) ->
+        ( _, Error _, _ ) ->
             -- pass through errors if any have previously occured
             prevStage
 
@@ -70,18 +72,21 @@ stages =
                 { neededNext = countries, currentStatus = Continue, stageCategory = Country }
     , \input ->
         case input of
-            "country" ->
-                { neededNext = [], currentStatus = Complete, stageCategory =  None }
+            "f" ->
+                { neededNext = countries, currentStatus = Continue, stageCategory = Country }
+
+            "a" ->
+                { neededNext = countries, currentStatus = Continue, stageCategory = Country }
 
             _ ->
-                { neededNext = countries, currentStatus = Continue, stageCategory = Country }
+                { neededNext = [], currentStatus = Complete, stageCategory = None }
     , \input ->
         case input of
-            "country" ->
-                { neededNext = [ "move", "->" ], currentStatus = Complete, stageCategory =Country }
+            "supports" ->
+                { neededNext = [ "move", "->" ], currentStatus = Continue, stageCategory = Command }
 
             _ ->
-                { neededNext = [ "move", "->" ], currentStatus = Continue, stageCategory = Command }
+                { neededNext = [ "move", "->" ], currentStatus = Complete, stageCategory = Country }
     , \_ -> { neededNext = countries, currentStatus = Continue, stageCategory = Country }
     , \_ -> { neededNext = [], currentStatus = Complete, stageCategory = None }
     , \_ -> { neededNext = [], currentStatus = Error InputError, stageCategory = None }

@@ -5241,7 +5241,7 @@ var $author$project$Hint$Command = {$: 'Command'};
 var $author$project$Hint$Complete = {$: 'Complete'};
 var $author$project$Hint$Country = {$: 'Country'};
 var $author$project$Hint$countries = _List_fromArray(
-	['Adriatic Sea', 'adr', 'adriatic', 'Aegean Sea', 'aeg', 'aegean', 'Albania', 'alb', 'Ankara', 'ank', 'Apulia', 'apu', 'Armenia', 'arm', 'Baltic Sea', 'bal', 'baltic', 'Barents Sea', 'bar', 'barents', 'Belgium', 'bel', 'Berlin', 'ber', 'Black Sea', 'bla', 'black', 'Bohemia', 'boh', 'Brest', 'bre', 'Budapest', 'bud', 'Bulgaria', 'bul', 'Burgundy', 'bur', 'Clyde', 'cly', 'Constantinople', 'con', 'Denmark', 'den', 'EasternMediterranean', 'eas', 'emed', 'east', 'eastmed', 'ems', 'eme', 'Edinburgh', 'edi', 'EnglishChannel', 'eng', 'EnglishChannel', 'ech', 'Finland', 'fin', 'Galicia', 'gal', 'Gascony', 'gas', 'Greece', 'gre', 'GulfofLyon', 'lyo', 'gol', 'gulfofl', 'lyon', 'GulfofBothnia', 'bot', 'gob', 'both', 'gulfofb', 'bothnia', 'HelgolandBight', 'hel', 'helgoland', 'Holland', 'hol', 'Ionian Sea', 'ion', 'ionian', 'Ireland', 'ire', 'Irish Sea', 'iri', 'irish', 'Kiel', 'kie', 'Liverpool', 'lvp', 'livp', 'lpl', 'Livonia', 'lvn', 'livo', 'lvo', 'lva', 'London', 'lon', 'Marseilles', 'mar', 'mars', 'Mid-AtlanticOcean', 'mao', 'midatlantic', 'mid', 'mat', 'Moscow', 'mos', 'Munich', 'mun', 'Naples', 'nap', 'napoli', 'NorthAtlanticOcean', 'nao', 'nat', 'NorthAfrica', 'naf', 'nora', 'North Sea', 'nth', 'norsea', 'nts', 'Norway', 'nor', 'nwy', 'norw', 'Norwegian Sea', 'nwg', 'norwsea', 'nrg', 'norwegian', 'Paris', 'par', 'Picardy', 'pic', 'Piedmont', 'pie', 'piemonte', 'Portugal', 'por', 'Prussia', 'pru', 'Rome', 'rom', 'roma', 'Ruhr', 'ruh', 'Rumania', 'rum', 'Serbia', 'ser', 'Sevastopol', 'sev', 'sevastapol', 'Silesia', 'sil', 'Skagerrak', 'ska', 'Smyrna', 'smy', 'Spain', 'spa', 'StPetersburg', 'stp', 'Sweden', 'swe', 'Switzerlandswi', 'switz', 'Syria', 'syr', 'Trieste', 'tri', 'Tunis', 'tun', 'tunisia', 'Tuscany', 'tus', 'Tyrolia', 'tyr', 'tyl', 'trl', 'Tyrrhenian Sea', 'tys', 'tyrr', 'tyn', 'tyh', 'Ukraine', 'ukr', 'Venice', 'ven', 'venizia', 'Vienna', 'vie', 'Wales', 'wal', 'Warsaw', 'war', 'WesternMediterranean', 'wes', 'wmed', 'west', 'western', 'wms', 'wme', 'Yorkshire', 'yor', 'york', 'yonkers']);
+	['ADR', 'AEG', 'Alb', 'Ank', 'Apu', 'Arm', 'BAL', 'BAR', 'Bel', 'Ber', 'BLA', 'Boh', 'Bre', 'Bud', 'Bul', 'Bur', 'Cly', 'Con', 'Den', 'EMS', 'Edi', 'ENG', 'Fin', 'Gal', 'Gas', 'GOB', 'GOL', 'Gre', 'HEL', 'Hol', 'ION', 'IRS', 'Kie', 'Liv', 'Lvp', 'Lon', 'MAO', 'Mar', 'Mos', 'Mun', 'Naf', 'NAO', 'Nap', 'NTH', 'Nwy', 'NWG', 'Par', 'Pic', 'Pie', 'Por', 'Pru', 'Rom', 'Ruh', 'Rum', 'Ser', 'Sev', 'Sil', 'SKA', 'Smy', 'Spa', 'Stp', 'Swe', 'Syr', 'Tri', 'Tun', 'Tus', 'Tyr', 'TYS', 'Ukr', 'Ven', 'Vie', 'Wal', 'War', 'WMS', 'Yor']);
 var $author$project$Hint$stages = _List_fromArray(
 	[
 		function (_v0) {
@@ -5276,26 +5276,29 @@ var $author$project$Hint$stages = _List_fromArray(
 		}
 	},
 		function (input) {
-		if (input === 'country') {
-			return {currentStatus: $author$project$Hint$Complete, neededNext: _List_Nil, stageCategory: $author$project$Hint$None};
-		} else {
-			return {currentStatus: $author$project$Hint$Continue, neededNext: $author$project$Hint$countries, stageCategory: $author$project$Hint$Country};
+		switch (input) {
+			case 'f':
+				return {currentStatus: $author$project$Hint$Continue, neededNext: $author$project$Hint$countries, stageCategory: $author$project$Hint$Country};
+			case 'a':
+				return {currentStatus: $author$project$Hint$Continue, neededNext: $author$project$Hint$countries, stageCategory: $author$project$Hint$Country};
+			default:
+				return {currentStatus: $author$project$Hint$Complete, neededNext: _List_Nil, stageCategory: $author$project$Hint$None};
 		}
 	},
 		function (input) {
-		if (input === 'country') {
-			return {
-				currentStatus: $author$project$Hint$Complete,
-				neededNext: _List_fromArray(
-					['move', '->']),
-				stageCategory: $author$project$Hint$Country
-			};
-		} else {
+		if (input === 'supports') {
 			return {
 				currentStatus: $author$project$Hint$Continue,
 				neededNext: _List_fromArray(
 					['move', '->']),
 				stageCategory: $author$project$Hint$Command
+			};
+		} else {
+			return {
+				currentStatus: $author$project$Hint$Complete,
+				neededNext: _List_fromArray(
+					['move', '->']),
+				stageCategory: $author$project$Hint$Country
 			};
 		}
 	},
@@ -5358,7 +5361,7 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $author$project$Client$getSuggestions = F2(
+var $author$project$Client$getHints = F2(
 	function (needed, input) {
 		return A2(
 			$elm$core$List$map,
@@ -5405,26 +5408,6 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 };
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
-var $author$project$Client$getHintsForCurrentInput = F2(
-	function (input, hints) {
-		return ($elm$core$String$length(input) > 0) ? A2(
-			$elm$core$List$filter,
-			function (hint) {
-				return A2($elm$core$String$contains, input, hint);
-			},
-			hints) : hints;
-	});
 var $elm$core$List$takeReverse = F3(
 	function (n, list, kept) {
 		takeReverse:
@@ -5551,24 +5534,23 @@ var $elm$core$List$take = F2(
 	function (n, list) {
 		return A3($elm$core$List$takeFast, 0, n, list);
 	});
-var $author$project$Client$viewStageStatus = F2(
-	function (hints, input) {
-		return A2(
-			$elm$core$List$take,
-			10,
-			A2(
-				$elm$core$List$map,
-				function (hint) {
-					return A2(
-						$elm$html$Html$div,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text(hint)
-							]));
-				},
-				A2($author$project$Client$getHintsForCurrentInput, input, hints)));
-	});
+var $author$project$Client$viewHints = function (hints) {
+	return A2(
+		$elm$core$List$take,
+		10,
+		A2(
+			$elm$core$List$map,
+			function (hint) {
+				return A2(
+					$elm$html$Html$div,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(hint)
+						]));
+			},
+			hints));
+};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $author$project$Client$viewSubmitButton = function (stageNeeds) {
 	var _v0 = stageNeeds.currentStatus;
@@ -5627,10 +5609,10 @@ var $author$project$Client$view = function (model) {
 				A2(
 				$elm$html$Html$div,
 				_List_Nil,
-				A2(
-					$author$project$Client$viewStageStatus,
-					A2($author$project$Client$getSuggestions, model.stageNeeds.neededNext, model.input),
-					model.input))
+				function () {
+					var hints = A2($author$project$Client$getHints, model.stageNeeds.neededNext, model.input);
+					return $author$project$Client$viewHints(hints);
+				}())
 			]));
 };
 var $author$project$Client$main = $elm$browser$Browser$element(
