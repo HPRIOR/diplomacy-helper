@@ -31,13 +31,76 @@ viewSubmitButton stageNeeds =
             button [] [ text "Can't Submit" ]
 
 
-{-| Appends the current input with any required input needed to progress to the next stage. 
+hintInInput : String -> String -> Bool
+hintInInput input hint =
+    let
+        lastInput =
+            case input |> String.words |> List.reverse of
+                head :: _ ->
+                    head
+
+                _ ->
+                    ""
+    in
+    hint |> String.startsWith lastInput
+
+
+getHint : String -> List String -> List String
+getHint input neededNext =
+    neededNext |> List.map (\needed -> input ++ " " ++ needed)
+
+
+removeLastWord: String -> String
+removeLastWord str =
+    str |> String.words
+
+getHintWithoutLastInput : String -> List String -> List String
+getHintWithoutLastInput input neededNext =
+    let
+        reversedWordsList =
+            input |> String.words |> List.reverse
+
+        reversedInputWithoutEnd =
+            case reversedWordsList of
+                _ :: tail ->
+                    tail |> List.foldr (\a b -> ) ""
+
+                _ ->
+                    reversedWordsList
+    in
+    neededNext |> List.map (\needed -> input ++ " " ++ needed)
+
+
+lastInputStartsWithHint : String -> List String -> Bool
+lastInputStartsWithHint input neededNext =
+    let
+        maybeLastInput =
+            input |> String.words |> List.reverse |> List.head
+    in
+    case maybeLastInput of
+        Nothing ->
+            False
+
+        Just lastInput ->
+            neededNext |> List.any (\needed -> String.startsWith lastInput needed)
+
+
+{-| Appends the current input with any required input needed to progress to the next stage.
 -}
-getHints : List String -> String -> List String
-getHints needed input =
-    if String.length input /= 0 then
-        needed |> List.map (\s -> input ++ " " ++ s)
-    else needed
+getHints : StageNeeds -> String -> List String
+getHints stageNeeds input =
+    if lastInputStartsWithHint input stageNeeds.neededNext then
+        stageNeeds.neededNext
+            |> List.filter (hintInInput input)
+            |> getHintWithoutLastInput input
+
+    else
+        case stageNeeds.currentStatus of
+            Error _ ->
+                []
+
+            _ ->
+                getHint input stageNeeds.neededNext
 
 
 {-| Converts suggested inputs to html
@@ -60,7 +123,7 @@ view model =
         , div [] <|
             let
                 hints =
-                    getHints model.stageNeeds.neededNext model.input
+                    getHints model.stageNeeds model.input
             in
             viewHints hints
         ]

@@ -5361,15 +5361,103 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$core$Basics$neq = _Utils_notEqual;
-var $author$project$Client$getHints = F2(
-	function (needed, input) {
-		return (!(!$elm$core$String$length(input))) ? A2(
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
+var $author$project$Client$getHint = F2(
+	function (input, neededNext) {
+		return A2(
 			$elm$core$List$map,
-			function (s) {
-				return input + (' ' + s);
+			function (needed) {
+				return input + (' ' + needed);
 			},
-			needed) : needed;
+			neededNext);
+	});
+var $author$project$Client$getHintWithoutLastInput = F2(
+	function (input, neededNext) {
+		var reversedWordsList = $elm$core$List$reverse(
+			$elm$core$String$words(input));
+		var reversedInputWithoutEnd = function () {
+			if (reversedWordsList.b) {
+				var tail = reversedWordsList.b;
+				return tail;
+			} else {
+				return reversedWordsList;
+			}
+		}();
+		return A2(
+			$elm$core$List$map,
+			function (needed) {
+				return input + (' ' + needed);
+			},
+			neededNext);
+	});
+var $author$project$Client$hintInInput = F2(
+	function (input, hint) {
+		var lastInput = function () {
+			var _v0 = $elm$core$List$reverse(
+				$elm$core$String$words(input));
+			if (_v0.b) {
+				var head = _v0.a;
+				return head;
+			} else {
+				return '';
+			}
+		}();
+		return A2($elm$core$String$startsWith, lastInput, hint);
+	});
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Client$lastInputStartsWithHint = F2(
+	function (input, neededNext) {
+		var maybeLastInput = $elm$core$List$head(
+			$elm$core$List$reverse(
+				$elm$core$String$words(input)));
+		if (maybeLastInput.$ === 'Nothing') {
+			return false;
+		} else {
+			var lastInput = maybeLastInput.a;
+			return A2(
+				$elm$core$List$any,
+				function (needed) {
+					return A2($elm$core$String$startsWith, lastInput, needed);
+				},
+				neededNext);
+		}
+	});
+var $author$project$Client$getHints = F2(
+	function (stageNeeds, input) {
+		if (A2($author$project$Client$lastInputStartsWithHint, input, stageNeeds.neededNext)) {
+			return A2(
+				$author$project$Client$getHintWithoutLastInput,
+				input,
+				A2(
+					$elm$core$List$filter,
+					$author$project$Client$hintInInput(input),
+					stageNeeds.neededNext));
+		} else {
+			var _v0 = stageNeeds.currentStatus;
+			if (_v0.$ === 'Error') {
+				return _List_Nil;
+			} else {
+				return A2($author$project$Client$getHint, input, stageNeeds.neededNext);
+			}
+		}
 	});
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$input = _VirtualDom_node('input');
@@ -5611,7 +5699,7 @@ var $author$project$Client$view = function (model) {
 				$elm$html$Html$div,
 				_List_Nil,
 				function () {
-					var hints = A2($author$project$Client$getHints, model.stageNeeds.neededNext, model.input);
+					var hints = A2($author$project$Client$getHints, model.stageNeeds, model.input);
 					return $author$project$Client$viewHints(hints);
 				}())
 			]));
