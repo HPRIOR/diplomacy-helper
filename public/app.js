@@ -5381,22 +5381,28 @@ var $author$project$Client$getHint = F2(
 			},
 			neededNext);
 	});
+var $author$project$Client$removeLastWord = function (str) {
+	var lastWordLen = function () {
+		var _v0 = $elm$core$List$reverse(
+			$elm$core$String$words(str));
+		if (_v0.b) {
+			var head = _v0.a;
+			return $elm$core$String$length(head);
+		} else {
+			return 0;
+		}
+	}();
+	return A2(
+		$elm$core$String$left,
+		($elm$core$String$length(str) - lastWordLen) - 1,
+		str);
+};
 var $author$project$Client$getHintWithoutLastInput = F2(
 	function (input, neededNext) {
-		var reversedWordsList = $elm$core$List$reverse(
-			$elm$core$String$words(input));
-		var reversedInputWithoutEnd = function () {
-			if (reversedWordsList.b) {
-				var tail = reversedWordsList.b;
-				return tail;
-			} else {
-				return reversedWordsList;
-			}
-		}();
 		return A2(
 			$elm$core$List$map,
 			function (needed) {
-				return input + (' ' + needed);
+				return $author$project$Client$removeLastWord(input) + (' ' + needed);
 			},
 			neededNext);
 	});

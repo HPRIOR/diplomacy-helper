@@ -1,4 +1,4 @@
-module Client exposing (main)
+module Client exposing (main, removeLastWord)
 
 import Browser
 import Hint exposing (..)
@@ -50,25 +50,23 @@ getHint input neededNext =
     neededNext |> List.map (\needed -> input ++ " " ++ needed)
 
 
-removeLastWord: String -> String
+removeLastWord : String -> String
 removeLastWord str =
-    str |> String.words
+    let
+        lastWordLen =
+            case str |> String.words |> List.reverse of
+                head :: _ ->
+                    String.length head
+
+                _ ->
+                    0
+    in
+    str |> String.left (String.length str - lastWordLen - 1)
+
 
 getHintWithoutLastInput : String -> List String -> List String
 getHintWithoutLastInput input neededNext =
-    let
-        reversedWordsList =
-            input |> String.words |> List.reverse
-
-        reversedInputWithoutEnd =
-            case reversedWordsList of
-                _ :: tail ->
-                    tail |> List.foldr (\a b -> ) ""
-
-                _ ->
-                    reversedWordsList
-    in
-    neededNext |> List.map (\needed -> input ++ " " ++ needed)
+    neededNext |> List.map (\needed -> removeLastWord input ++ " " ++ needed)
 
 
 lastInputStartsWithHint : String -> List String -> Bool
