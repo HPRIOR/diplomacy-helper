@@ -1,8 +1,7 @@
-module Example exposing (..)
+module ViewTests exposing (..)
 
 import Client exposing (removeLastWord)
-import Expect exposing (Expectation)
-import Fuzz exposing (Fuzzer, int, list, string)
+import Expect exposing (..)
 import Test exposing (..)
 
 

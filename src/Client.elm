@@ -64,8 +64,8 @@ removeLastWord str =
     str |> String.left (String.length str - lastWordLen - 1)
 
 
-getHintWithoutLastInput : String -> List String -> List String
-getHintWithoutLastInput input neededNext =
+getInputWithoutLastWord : String -> List String -> List String
+getInputWithoutLastWord input neededNext =
     neededNext |> List.map (\needed -> removeLastWord input ++ " " ++ needed)
 
 
@@ -90,7 +90,7 @@ getHints stageNeeds input =
     if lastInputStartsWithHint input stageNeeds.neededNext then
         stageNeeds.neededNext
             |> List.filter (hintInInput input)
-            |> getHintWithoutLastInput input
+            |> getInputWithoutLastWord input
 
     else
         case stageNeeds.currentStatus of

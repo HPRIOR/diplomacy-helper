@@ -5397,7 +5397,7 @@ var $author$project$Client$removeLastWord = function (str) {
 		($elm$core$String$length(str) - lastWordLen) - 1,
 		str);
 };
-var $author$project$Client$getHintWithoutLastInput = F2(
+var $author$project$Client$getInputWithoutLastWord = F2(
 	function (input, neededNext) {
 		return A2(
 			$elm$core$List$map,
@@ -5450,7 +5450,7 @@ var $author$project$Client$getHints = F2(
 	function (stageNeeds, input) {
 		if (A2($author$project$Client$lastInputStartsWithHint, input, stageNeeds.neededNext)) {
 			return A2(
-				$author$project$Client$getHintWithoutLastInput,
+				$author$project$Client$getInputWithoutLastWord,
 				input,
 				A2(
 					$elm$core$List$filter,

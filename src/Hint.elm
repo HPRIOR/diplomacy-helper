@@ -1,4 +1,4 @@
-module Hint exposing (StageCategory(..), StageCode(..), StageNeeds, getStageStatus)
+module Hint exposing (StageCategory(..), StageCode(..), StageNeeds, StageError(..), getStageStatus)
 
 
 countries : List String
